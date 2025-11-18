@@ -13,6 +13,7 @@ import time
 import os
 import threading
 from collections import defaultdict, deque
+from pathlib import Path
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
@@ -319,7 +320,13 @@ app.include_router(employees_router)
 app.include_router(work_records_router)
 
 # Static files (offline mode: htmx.min.js, etc.)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+_static_dir = Path(__file__).parent / "static"
+if _static_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(_static_dir)), name="static")
+else:  # pragma: no cover - informational log
+    import logging
+
+    logging.getLogger(__name__).warning("Static directory %s does not exist; skipping mount", _static_dir)
 
 # Web interface (SPA) — mounted at / (MUST be LAST to avoid blocking API routes)
 # All API routes are under /api prefix, so this should not conflict
@@ -4008,7 +4015,13 @@ def dashboard_recent(
 # Web interface (SPA) — mounted at "/" to serve React app
 # CRITICAL: This MUST be registered AFTER all @app.get()/@app.post() decorators
 # Otherwise StaticFiles intercepts /api/* routes and returns 404
-app.mount("/", StaticFiles(directory="web", html=True), name="web")
+_web_dir = Path(__file__).parent / "web"
+if _web_dir.exists():
+    app.mount("/", StaticFiles(directory=str(_web_dir), html=True), name="web")
+else:  # pragma: no cover - informational log
+    import logging
+
+    logging.getLogger(__name__).warning("Web directory %s does not exist; skipping mount", _web_dir)
 
 
 
