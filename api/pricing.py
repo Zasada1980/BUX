@@ -4,10 +4,14 @@ from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 from datetime import datetime
 from typing import Tuple, List, Dict
+import os
 import yaml
 
 
-RULES_PATHS = [Path("rules/global.yaml")]  # priority from left to right
+# CI-8A: Support environment variable for pricing rules path
+# Default: rules/global.yaml (test/dev)
+# Production: Set PRICING_RULES_PATH to production config location
+RULES_PATHS = [Path(os.getenv("PRICING_RULES_PATH", "rules/global.yaml"))]  # priority from left to right
 
 
 class PricingError(Exception):

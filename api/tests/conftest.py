@@ -229,3 +229,25 @@ def seed_telegram_admin(db_engine_and_session):
 
     finally:
         session.close()
+
+
+
+@pytest.fixture(scope="session", autouse=True)
+def pricing_rules_env():
+    """
+    CI-8A: Set PRICING_RULES_PATH for test suite.
+    Ensures all pricing tests use rules/global.yaml (test config).
+    Production deployments should set this to production pricing file.
+    """
+    import os
+    from pathlib import Path
+    
+    # Set test pricing rules path
+    test_rules_path = Path("rules/global.yaml")
+    os.environ["PRICING_RULES_PATH"] = str(test_rules_path)
+    
+    yield
+    
+    # Cleanup (optional - env vars typically reset between test runs)
+    if "PRICING_RULES_PATH" in os.environ:
+        del os.environ["PRICING_RULES_PATH"]
