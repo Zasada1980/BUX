@@ -7,7 +7,8 @@ from typing import Tuple, List, Dict
 import yaml
 
 
-RULES_PATHS = [Path("rules/global.yaml")]  # priority from left to right
+BASE_RULES_PATH = Path(__file__).parent / "rules"
+RULES_PATHS = [BASE_RULES_PATH / "global.yaml"]  # priority from left to right
 
 
 class PricingError(Exception):

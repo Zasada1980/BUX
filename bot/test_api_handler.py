@@ -19,7 +19,7 @@ api = get_api_client(API_BASE_URL, INTERNAL_API_TOKEN)
 
 
 @router.message(Command("test_api"))
-async def test_api_command(message: Message):
+async def handle_test_api_command(message: Message):
     """
     Тест APIClient: проверка всех основных методов.
     
