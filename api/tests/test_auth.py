@@ -13,7 +13,6 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
-from fastapi.testclient import TestClient
 from main import app
 from models import Employee, AuthCredential
 from sqlalchemy import create_engine
@@ -22,7 +21,9 @@ from passlib.context import CryptContext
 import jwt
 import os
 
-client = TestClient(app)
+from ._client import build_test_client
+
+client = build_test_client(app)
 
 DB_PATH = "/data/workledger.db"
 engine = create_engine(f"sqlite:///{DB_PATH}")
