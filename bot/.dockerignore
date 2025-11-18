@@ -1,0 +1,17 @@
+# Exclude Docker-related files
+.dockerignore
+docker-compose.yml
+Dockerfile
+
+# Exclude test artifacts
+htmlcov/
+.coverage
+.pytest_cache/
+
+# Exclude IDE/editor files
+*.swo
+*.swp
+.idea/
+.vscode/
+.gitignore
+**/*.jfm

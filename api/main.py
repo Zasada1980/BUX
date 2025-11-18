@@ -15,6 +15,7 @@ import threading
 from collections import defaultdict, deque
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
+from pathlib import Path
 
 from config import settings
 from db import SessionLocal
@@ -319,7 +320,10 @@ app.include_router(employees_router)
 app.include_router(work_records_router)
 
 # Static files (offline mode: htmx.min.js, etc.)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Use absolute path from api/ directory for pytest compatibility
+STATIC_DIR = Path(__file__).parent / "static"
+STATIC_DIR.mkdir(exist_ok=True)  # Create if doesn't exist (for tests)
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # Web interface (SPA) — mounted at / (MUST be LAST to avoid blocking API routes)
 # All API routes are under /api prefix, so this should not conflict
@@ -4008,7 +4012,9 @@ def dashboard_recent(
 # Web interface (SPA) — mounted at "/" to serve React app
 # CRITICAL: This MUST be registered AFTER all @app.get()/@app.post() decorators
 # Otherwise StaticFiles intercepts /api/* routes and returns 404
-app.mount("/", StaticFiles(directory="web", html=True), name="web")
+WEB_DIR = Path(__file__).parent / "web"
+WEB_DIR.mkdir(exist_ok=True)  # Create if doesn't exist (for tests)
+app.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="web")
 
 
 

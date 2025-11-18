@@ -10,5 +10,10 @@ RUN apt-get update \
 RUN pip install --no-cache-dir fastapi uvicorn[standard] alembic pydantic-settings jinja2 pillow pytesseract pyjwt bcrypt sqlalchemy pytest httpx passlib
 COPY . /app
 RUN mkdir -p /app/db
+
+# CI-8E: Create symlink for api.* imports (supports 'from api.xxx' in tests)
+RUN if [ ! -e api ]; then ln -s . api; fi
+
 EXPOSE 8080
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+

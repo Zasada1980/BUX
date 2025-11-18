@@ -14,7 +14,9 @@ env.cloud
 # ═══════════════════════════════════════════════════════════════
 # Database Files
 # ═══════════════════════════════════════════════════════════════
-db/
+db/*.db
+db/*.sqlite*
+db/**/test_*.db
 *.db
 *.db.backup*
 *.db_backup*
@@ -23,6 +25,9 @@ db/
 *.db-wal
 *.sqlite
 *.sqlite3
+
+# Keep Alembic migrations
+!db/alembic/
 
 # ═══════════════════════════════════════════════════════════════
 # Backups & Exports
@@ -122,7 +127,7 @@ Thumbs.db
 # ═══════════════════════════════════════════════════════════════
 # Docker
 # ═══════════════════════════════════════════════════════════════
-.dockerignore
+
 
 # ═══════════════════════════════════════════════════════════════
 # Temporary Files
@@ -171,3 +176,5 @@ accounting-system-offline*/
 # !requirements*.txt
 # !Makefile
 # !README.md
+api/api
+api/api

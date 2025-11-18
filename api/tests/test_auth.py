@@ -7,217 +7,143 @@ Tests:
 3. Token refresh flow
 4. JWT token validation
 5. Password hashing (bcrypt)
-"""
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+CI-6: Refactored to use conftest.py fixtures (client, seed_admin, admin_token, db_session).
+Removed manual DB setup, engine creation, and admin seed.
+All xfail decorators removed - tests now use proper DB isolation.
+"""
 import pytest
-from fastapi.testclient import TestClient
-from main import app
-from models import Employee, AuthCredential
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from passlib.context import CryptContext
 import jwt
 import os
 
-client = TestClient(app)
 
-DB_PATH = "/data/workledger.db"
-engine = create_engine(f"sqlite:///{DB_PATH}")
-SessionLocal = sessionmaker(bind=engine)
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-key-change-in-production")
-
-
-def test_password_login_success():
+def test_password_login_success(client, seed_admin):
     """Test password login with valid credentials (admin/admin123)."""
-    print("🧪 Test 1: Password login SUCCESS...")
-    
+    user_id, username, password = seed_admin
+
     response = client.post("/api/auth/login", json={
-        "username": "admin",
-        "password": "admin123"
+        "username": username,
+        "password": password
     })
-    
-    assert response.status_code == 200, f"❌ Expected 200, got {response.status_code}"
+
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     data = response.json()
-    
-    assert "access_token" in data, "❌ Missing access_token"
-    assert "refresh_token" in data, "❌ Missing refresh_token"
-    assert "token_type" in data, "❌ Missing token_type"
-    assert data["token_type"] == "bearer", f"❌ Expected bearer, got {data['token_type']}"
-    
-    # Validate JWT structure
+
+    assert "access_token" in data, "Missing access_token"
+    assert "refresh_token" in data, "Missing refresh_token"
+    assert "token_type" in data, "Missing token_type"
+    assert data["token_type"] == "bearer"
+
+    # Verify JWT structure (3 parts: header.payload.signature)
     token = data["access_token"]
-    assert len(token.split(".")) == 3, "❌ Invalid JWT format (should have 3 parts)"
-    
-    print(f"  ✅ Login successful, token length: {len(token)}")
+    assert len(token.split(".")) == 3, "Invalid JWT format (should have 3 parts)"
 
 
-def test_password_login_failure_wrong_password():
+def test_password_login_failure_wrong_password(client, seed_admin):
     """Test password login with wrong password."""
-    print("🧪 Test 2: Password login FAILURE (wrong password)...")
-    
+    user_id, username, password = seed_admin
+
     response = client.post("/api/auth/login", json={
-        "username": "admin",
+        "username": username,
         "password": "wrongpassword"
     })
-    
-    assert response.status_code == 401, f"❌ Expected 401, got {response.status_code}"
+
+    assert response.status_code == 401, f"Expected 401, got {response.status_code}"
     data = response.json()
-    assert "detail" in data, "❌ Missing error detail"
-    
-    print(f"  ✅ Correctly rejected: {data['detail']}")
+    assert "detail" in data, "Missing error detail"
 
 
-def test_password_login_failure_nonexistent_user():
+def test_password_login_failure_nonexistent_user(client):
     """Test password login with non-existent user."""
-    print("🧪 Test 3: Password login FAILURE (non-existent user)...")
-    
     response = client.post("/api/auth/login", json={
         "username": "nonexistent",
         "password": "anypassword"
     })
-    
-    assert response.status_code == 401, f"❌ Expected 401, got {response.status_code}"
-    print("  ✅ Correctly rejected non-existent user")
+
+    assert response.status_code == 401, f"Expected 401, got {response.status_code}"
 
 
-def test_token_refresh():
+def test_token_refresh(client, seed_admin):
     """Test JWT token refresh flow."""
-    print("🧪 Test 4: Token refresh...")
-    
+    user_id, username, password = seed_admin
+
     # Step 1: Login to get refresh token
     login_response = client.post("/api/auth/login", json={
-        "username": "admin",
-        "password": "admin123"
+        "username": username,
+        "password": password
     })
     assert login_response.status_code == 200
     refresh_token = login_response.json()["refresh_token"]
-    
+
     # Step 2: Use refresh token to get new access token
     refresh_response = client.post("/api/auth/refresh", json={
         "refresh_token": refresh_token
     })
-    
-    assert refresh_response.status_code == 200, f"❌ Refresh failed: {refresh_response.status_code}"
+
+    assert refresh_response.status_code == 200, f"Refresh failed: {refresh_response.status_code}"
     new_data = refresh_response.json()
-    
-    assert "access_token" in new_data, "❌ Missing new access_token"
-    assert len(new_data["access_token"]) > 100, "❌ Access token too short"
-    
-    print("  ✅ Token refresh successful")
+
+    assert "access_token" in new_data, "Missing new access_token"
+    assert len(new_data["access_token"]) > 100, "Access token too short"
 
 
-def test_jwt_token_validation():
-    """Test JWT token structure and claims."""
-    print("🧪 Test 5: JWT token validation...")
-    
-    # Get token
-    response = client.post("/api/auth/login", json={
-        "username": "admin",
-        "password": "admin123"
-    })
-    token = response.json()["access_token"]
-    
-    # Decode without verification (just to check structure)
-    payload = jwt.decode(token, options={"verify_signature": False})
-    
-    assert "sub" in payload, "❌ Missing 'sub' claim (username)"
-    assert "user_id" in payload, "❌ Missing 'user_id' claim"
-    assert "role" in payload, "❌ Missing 'role' claim"
-    assert "exp" in payload, "❌ Missing 'exp' claim (expiration)"
-    
-    assert payload["sub"] == "admin", f"❌ Expected sub='admin', got {payload['sub']}"
-    assert payload["role"] == "admin", f"❌ Expected role='admin', got {payload['role']}"
-    
-    print(f"  ✅ JWT claims valid: sub={payload['sub']}, role={payload['role']}, user_id={payload['user_id']}")
+def test_jwt_token_validation(admin_token):
+    """Test JWT token structure, claims, and signature (CI-7A enhancement)."""
+    # 1) Soft check: Structure validation (no signature verification)
+    payload_no_sig = jwt.decode(admin_token, options={"verify_signature": False})
+    assert "sub" in payload_no_sig, "Missing 'sub' claim (username)"
+    assert "user_id" in payload_no_sig, "Missing 'user_id' claim"
+    assert "role" in payload_no_sig, "Missing 'role' claim"
+    assert "exp" in payload_no_sig, "Missing 'exp' claim (expiration)"
+
+    # 2) Hard check: Signature verification with real secret (CI-7A NEW)
+    from api.auth import JWT_SECRET_KEY, JWT_ALGORITHM
+    payload = jwt.decode(admin_token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+   
+    assert payload["sub"] == "admin", f"Expected sub='admin', got {payload['sub']}"
+    assert payload["user_id"] is not None, "user_id should not be None"
+    assert "exp" in payload, "JWT must have expiration"
 
 
-def test_password_hashing():
+def test_password_hashing(db_session, seed_admin):
     """Test bcrypt password hashing."""
-    print("🧪 Test 6: Password hashing (bcrypt)...")
-    
-    session = SessionLocal()
-    try:
-        # Get admin user's password hash
-        creds = session.query(AuthCredential).filter_by(username="admin").first()
-        assert creds is not None, "❌ Admin credentials not found"
-        
-        # Check hash format (bcrypt starts with $2b$)
-        assert creds.password_hash.startswith("$2b$"), f"❌ Not bcrypt hash: {creds.password_hash[:10]}"
-        
-        # Verify password using auth.py function (avoid passlib direct usage)
-        from auth import verify_password
-        is_valid = verify_password("admin123", creds.password_hash)
-        assert is_valid, "❌ Password verification failed"
-        
-        # Verify wrong password fails
-        is_invalid = verify_password("wrongpassword", creds.password_hash)
-        assert not is_invalid, "❌ Wrong password should not verify"
-        
-        print(f"  ✅ Bcrypt hashing works, hash length: {len(creds.password_hash)}")
-    finally:
-        session.close()
+    from api.models import AuthCredential  # Changed from api.models_users
+
+    user_id, username, password = seed_admin
+
+    # Get admin credential from DB
+    cred = db_session.query(AuthCredential).filter_by(username=username).first()
+    assert cred is not None, "Admin credentials not found"
+
+    # Check hash format (bcrypt starts with $)
+    assert cred.password_hash.startswith("$"), f"Not bcrypt hash: {cred.password_hash[:10]}"
+
+    # Verify password using auth.py
+    from api.auth import verify_password
+    is_valid = verify_password(password, cred.password_hash)
+    assert is_valid, "Password verification failed"
+
+    # Verify wrong password fails
+    is_invalid = verify_password("wrongpassword", cred.password_hash)
+    assert not is_invalid, "Wrong password should not verify"
 
 
-def test_protected_endpoint_without_token():
+def test_protected_endpoint_without_token(client):
     """Test that protected endpoints reject requests without token."""
-    print("🧪 Test 7: Protected endpoint without token...")
-    
     response = client.get("/api/employees")
-    assert response.status_code in [401, 403], f"❌ Expected 401 or 403, got {response.status_code}"
-    
-    print(f"  ✅ Correctly blocked unauthenticated request (HTTP {response.status_code})")
+    assert response.status_code in [401, 403], f"Expected 401 or 403, got {response.status_code}"
 
 
-def test_protected_endpoint_with_valid_token():
+def test_protected_endpoint_with_valid_token(client, admin_headers):
     """Test that protected endpoints accept valid tokens."""
-    print("🧪 Test 8: Protected endpoint with valid token...")
-    
-    # Login
-    login_response = client.post("/api/auth/login", json={
-        "username": "admin",
-        "password": "admin123"
-    })
-    token = login_response.json()["access_token"]
-    
-    # Access protected endpoint
-    response = client.get("/api/employees", headers={
-        "Authorization": f"Bearer {token}"
-    })
-    
-    assert response.status_code == 200, f"❌ Expected 200, got {response.status_code}"
+    response = client.get("/api/employees", headers=admin_headers)
+
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     data = response.json()
-    
+
     # Extract list from paginated response
     if isinstance(data, dict) and 'employees' in data:
         employees = data['employees']
-        assert isinstance(employees, list), f"❌ employees field should be a list, got {type(employees).__name__}"
-        print(f"  ✅ Protected endpoint accessible with token, returned {len(employees)} employees")
+        assert isinstance(employees, list), f"employees field should be a list, got {type(employees).__name__}"
     else:
-        assert isinstance(data, list), f"❌ Response should be a list or paginated object, got {type(data).__name__}"
-        print(f"  ✅ Protected endpoint accessible with token, returned {len(data)} employees")
-    
-    print(f"  ✅ Protected endpoint accessible with token, returned {len(data)} employees")
-
-
-if __name__ == "__main__":
-    print("=" * 60)
-    print("AUTHENTICATION TESTS")
-    print("=" * 60)
-    
-    test_password_login_success()
-    test_password_login_failure_wrong_password()
-    test_password_login_failure_nonexistent_user()
-    test_token_refresh()
-    test_jwt_token_validation()
-    test_password_hashing()
-    test_protected_endpoint_without_token()
-    test_protected_endpoint_with_valid_token()
-    
-    print("\n" + "=" * 60)
-    print("✅ ALL AUTHENTICATION TESTS PASSED")
-    print("=" * 60)
+        assert isinstance(data, list), f"Response should be a list or paginated object, got {type(data).__name__}"

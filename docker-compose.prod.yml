@@ -27,6 +27,7 @@ services:
       - INTERNAL_ADMIN_SECRET=${INTERNAL_ADMIN_SECRET:-change-me}
       - ADMIN_USER_HEADER=${ADMIN_USER_HEADER:-X-Admin-User}
       - ALEMBIC_URL=sqlite:////app/db/shifts.db
+      - PRICING_RULES_PATH=/app/config/pricing/global_prod.yaml
     volumes:
       - ./api/data:/app/data
       - ./api:/app:rw
@@ -34,6 +35,7 @@ services:
       - ./backups:/app/backups:rw
       - ./alembic.ini:/app/alembic.ini:ro
       - ./templates:/templates:ro
+      - ./config:/app/config:ro
     ports:
       - "127.0.0.1:8088:8080"
     networks:
