@@ -12,7 +12,7 @@ from decimal import Decimal
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-from utils.idempotency_guard import scope_hash, ensure_idempotent
+from api.utils.idempotency_guard import scope_hash, ensure_idempotent
 from fastapi import HTTPException
 
 
