@@ -1,0 +1,7 @@
+
+src/pages/InboxPage.tsx(60,16): error TS2345: Argument of type 'PendingItem[]' is not assignable to parameter of type 'SetStateAction<PendingItem[]>'.
+src/pages/InboxPage.tsx(341,9): error TS2322: Type '({ key: string; label: Element; render: (item: PendingItem) => Element; sortable: boolean; } | { key: string; label: string; sortable: boolean; render?: undefined; } | { ...; } | { ...; })[]' is not assignable to type 'Column<PendingItem>[]'.
+src/pages/LoginPage.tsx(4,1): error TS6133: 'useToast' is declared but its value is never read.
+src/pages/ShiftsPage.tsx(43,17): error TS2554: Expected 0 arguments, but got 2.
+src/pages/TasksPage.tsx(45,16): error TS2554: Expected 0 arguments, but got 2.
+

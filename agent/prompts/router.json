@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "routing": {
+    "classify": {
+      "llm_preset": "small",
+      "max_tokens": 256,
+      "temperature": 0.2,
+      "description": "Быстрая классификация категорий/ставок"
+    },
+    "explain": {
+      "llm_preset": "medium",
+      "max_tokens": 512,
+      "temperature": 0.5,
+      "description": "Объяснение расчётов с цитированием YAML"
+    },
+    "diff": {
+      "llm_preset": "medium",
+      "max_tokens": 768,
+      "temperature": 0.3,
+      "description": "Сравнение двух версий/расчётов"
+    }
+  },
+  "models": {
+    "small": "qwen2.5:0.5b",
+    "medium": "qwen2.5:3b",
+    "large": "qwen2.5:7b"
+  },
+  "limits": {
+    "max_retries": 3,
+    "timeout_seconds": 30,
+    "max_context_tokens": 4096
+  },
+  "fallback": {
+    "on_unknown_intent": "explain",
+    "on_timeout": "return_partial",
+    "on_error": "log_and_notify"
+  }
+}

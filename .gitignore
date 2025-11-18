@@ -1,0 +1,173 @@
+# TelegramOllama - Git Ignore Configuration
+# Generated: 2025-01-24 (F13 Pre-Push Audit)
+
+# ═══════════════════════════════════════════════════════════════
+# Environment Variables & Secrets
+# ═══════════════════════════════════════════════════════════════
+.env
+.env.*
+env.cloud
+*.env.local
+*.env.production
+*.env.development
+
+# ═══════════════════════════════════════════════════════════════
+# Database Files
+# ═══════════════════════════════════════════════════════════════
+db/
+*.db
+*.db.backup*
+*.db_backup*
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# ═══════════════════════════════════════════════════════════════
+# Backups & Exports
+# ═══════════════════════════════════════════════════════════════
+backups/
+exports/
+*.backup
+*.bak
+*_old
+*_backup
+
+# ═══════════════════════════════════════════════════════════════
+# Logs
+# ═══════════════════════════════════════════════════════════════
+logs/
+*.log
+*.log.*
+metrics_*.jsonl
+
+# ═══════════════════════════════════════════════════════════════
+# Python
+# ═══════════════════════════════════════════════════════════════
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.hypothesis/
+
+# ═══════════════════════════════════════════════════════════════
+# Node.js / Frontend
+# ═══════════════════════════════════════════════════════════════
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json
+yarn.lock
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Vite
+dist/
+.vite/
+*.local
+
+# Build outputs
+out/
+build/
+
+# ═══════════════════════════════════════════════════════════════
+# Testing
+# ═══════════════════════════════════════════════════════════════
+test-results/
+playwright-report/
+playwright/.cache/
+coverage/
+.nyc_output/
+
+# ═══════════════════════════════════════════════════════════════
+# IDE & Editors
+# ═══════════════════════════════════════════════════════════════
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ═══════════════════════════════════════════════════════════════
+# Docker
+# ═══════════════════════════════════════════════════════════════
+.dockerignore
+
+# ═══════════════════════════════════════════════════════════════
+# Temporary Files
+# ═══════════════════════════════════════════════════════════════
+*.tmp
+*.temp
+.cache/
+tmp/
+
+# ═══════════════════════════════════════════════════════════════
+# OS Files
+# ═══════════════════════════════════════════════════════════════
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ═══════════════════════════════════════════════════════════════
+# Ollama Models
+# ═══════════════════════════════════════════════════════════════
+ollama_models/
+
+# ═══════════════════════════════════════════════════════════════
+# AI Evaluation
+# ═══════════════════════════════════════════════════════════════
+ai_eval/
+rag/
+
+# ═══════════════════════════════════════════════════════════════
+# Legacy / Deprecated
+# ═══════════════════════════════════════════════════════════════
+TelegramOllama/
+accounting-system-offline*/
+
+# ═══════════════════════════════════════════════════════════════
+# Project-Specific
+# ═══════════════════════════════════════════════════════════════
+# Keep these files/folders:
+# !docker-compose.yml
+# !alembic.ini
+# !pyproject.toml
+# !requirements*.txt
+# !Makefile
+# !README.md

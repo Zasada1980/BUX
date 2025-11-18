@@ -1,0 +1,29 @@
+version: 1
+currency: RUB
+rounding: 2
+rates:
+  base_rate_hour:
+    type: hour
+    value: 50.0
+    description: "Base worker hourly rate (TD-B3)"
+  hour_electric:
+    type: hour
+    value: 800
+  piece_demo:
+    type: unit
+    value: 500
+
+expenses:
+  allow_categories: [материалы, транспорт, питание]
+  require_photo_over: 1000
+  soft_limits:
+    питание_per_day: 500
+  auto_attach_same_day: true
+
+modifiers:
+  weekend:
+    when: "is_weekend"
+    add_percent: 50
+  night_shift:
+    when: "hour(22-06)"
+    add_percent: 20

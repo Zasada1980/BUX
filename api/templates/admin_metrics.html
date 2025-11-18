@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Metrics Dashboard</title>
+    <script src="/static/htmx.min.js"></script>
+    <script src="/static/alpine.min.js" defer></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 20px; font-size: 28px; }
+        .controls { margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
+        button { 
+            padding: 10px 20px; 
+            border: 1px solid #ddd; 
+            background: white; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        button:hover { background: #f0f0f0; }
+        button.active { background: #007bff; color: white; border-color: #007bff; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        th, td { 
+            padding: 12px 16px; 
+            text-align: left; 
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th { 
+            background: #f8f9fa; 
+            font-weight: 600; 
+            color: #495057;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover { background: #f8f9fa; }
+        .numeric { text-align: right; font-family: 'Courier New', monospace; }
+        .error-high { color: #dc3545; font-weight: bold; }
+        .error-low { color: #28a745; }
+        .refresh-indicator { 
+            display: inline-block; 
+            margin-left: 10px; 
+            color: #6c757d; 
+            font-size: 12px;
+        }
+        .htmx-request .htmx-indicator { display: inline; }
+        .htmx-indicator { display: none; }
+        .no-data { 
+            text-align: center; 
+            padding: 40px; 
+            color: #6c757d; 
+            font-style: italic;
+        }
+    </style>
+</head>
+<body x-data="{ window: '1h' }">
+    <div class="container">
+        <h1>📊 Admin Metrics Dashboard</h1>
+        
+        <div class="controls">
+            <span style="color: #6c757d; margin-right: 10px;">Time Window:</span>
+            <button 
+                @click="window='15m'" 
+                :class="{ active: window === '15m' }"
+                hx-get="/admin/metrics/table?window=15m" 
+                hx-target="#metrics-container" 
+                hx-swap="innerHTML">
+                15 minutes
+            </button>
+            <button 
+                @click="window='1h'" 
+                :class="{ active: window === '1h' }"
+                hx-get="/admin/metrics/table?window=1h" 
+                hx-target="#metrics-container" 
+                hx-swap="innerHTML">
+                1 hour
+            </button>
+            <button 
+                @click="window='24h'" 
+                :class="{ active: window === '24h' }"
+                hx-get="/admin/metrics/table?window=24h" 
+                hx-target="#metrics-container" 
+                hx-swap="innerHTML">
+                24 hours
+            </button>
+            <span class="refresh-indicator htmx-indicator">⟳ Updating...</span>
+        </div>
+        
+        <div 
+            id="metrics-container"
+            hx-get="/admin/metrics/table?window=1h" 
+            hx-trigger="load, every 5s" 
+            hx-indicator=".htmx-indicator">
+            <!-- Table will be loaded here -->
+        </div>
+    </div>
+</body>
+</html>

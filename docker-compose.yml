@@ -1,0 +1,101 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: demo_ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    volumes:
+      - ./ollama_models:/root/.ollama
+    ports:
+      - "127.0.0.1:11444:11434"
+    networks:
+      - internal
+    labels:
+      - "egress.policy=deny-external"  # Documentation: no external access in production
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: demo_api
+    environment:
+      - TZ=${TZ:-Asia/Jerusalem}
+      - DB_PATH=${DB_PATH:-/app/db/shifts.db}
+      - AGENT_URL=${AGENT_URL:-http://agent:8080}
+      - INTERNAL_API_TOKEN=${INTERNAL_API_TOKEN}
+      - INTERNAL_ADMIN_SECRET=${INTERNAL_ADMIN_SECRET:-change-me}
+      - ADMIN_USER_HEADER=${ADMIN_USER_HEADER:-X-Admin-User}
+      - ALEMBIC_URL=sqlite:////app/db/shifts.db
+    volumes:
+      - ./api/data:/app/data
+      - ./api:/app:rw
+      - ./db:/app/db:rw
+      - ./backups:/app/backups:rw
+      - ./alembic.ini:/app/alembic.ini:ro
+      - ./templates:/templates:ro
+    ports:
+      - "127.0.0.1:8188:8080"
+    networks:
+      - internal
+    depends_on:
+      - agent
+    restart: unless-stopped
+
+  agent:
+    build:
+      context: ./agent
+      dockerfile: Dockerfile
+    container_name: demo_agent
+    environment:
+      - TZ=${TZ:-Asia/Jerusalem}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      - DB_PATH=${DB_PATH:-/app/data/workledger.db}
+      - API_BASE_URL=http://api:8080
+    volumes:
+      - ./api/data:/app/data
+      - ./agent:/app:rw
+    ports:
+      - "127.0.0.1:8181:8080"
+    networks:
+      - internal
+    labels:
+      - "egress.policy=deny-external"  # Documentation: no external access in production
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  bot:
+    build:
+      context: .
+      dockerfile: ./bot/Dockerfile
+    container_name: demo_bot
+    environment:
+      - TZ=${TZ:-Asia/Jerusalem}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - API_BASE_URL=${API_BASE_URL:-http://api:8080}
+      - AGENT_URL=${AGENT_URL:-http://agent:8080}
+      - DB_PATH=${DB_PATH:-/app/db/shifts.db}
+      - INTERNAL_API_TOKEN=${INTERNAL_API_TOKEN}
+      - BOT_ADMINS=${BOT_ADMINS:-8473812812}
+      - BOT_FOREMEN=${BOT_FOREMEN:-8473812812}
+      - BOT_WORKERS=${BOT_WORKERS:-8473812812}
+      - DEV_MODE=${DEV_MODE:-false}
+    volumes:
+      - ./api/data:/app/data
+      - ./db:/app/db:rw
+      - ./api:/app/api:ro
+      - ./bot:/app/bot:rw
+      - ./logs/bot:/app/logs:rw
+      - ./.env.bot:/app/.env.bot:ro
+    networks:
+      - internal
+    depends_on:
+      - api
+      - agent
+    restart: unless-stopped
+
+networks:
+  internal:
+    driver: bridge
+

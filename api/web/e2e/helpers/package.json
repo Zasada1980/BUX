@@ -1,0 +1,9 @@
+{
+  "name": "playwright-helpers",
+  "version": "1.0.0",
+  "description": "Helper utilities for Playwright E2E tests",
+  "exports": {
+    "./login": "./helpers/login.js",
+    "./api": "./helpers/api.js"
+  }
+}

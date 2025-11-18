@@ -1,0 +1,30 @@
+
+src/pages/DashboardPage.tsx(50,19): error TS2339: Property 'get' does not exist on type 'ApiClient'.
+src/pages/DashboardPage.tsx(51,19): error TS2339: Property 'get' does not exist on type 'ApiClient'.
+src/pages/DashboardPage.tsx(52,19): error TS2339: Property 'get' does not exist on type 'ApiClient'.
+src/pages/ExpensesPage.tsx(11,1): error TS6192: All imports in import declaration are unused.
+src/pages/ExpensesPage.tsx(49,9): error TS6133: 'handleExport' is declared but its value is never read.
+src/pages/ExpensesPage.tsx(53,11): error TS2304: Cannot find name 'workerFilter'.
+src/pages/ExpensesPage.tsx(53,49): error TS2304: Cannot find name 'workerFilter'.
+src/pages/ExpensesPage.tsx(60,47): error TS2304: Cannot find name 'token'.
+src/pages/ExpensesPage.tsx(296,20): error TS2552: Cannot find name 'handleExportCSV'. Did you mean 'handleExport'?
+src/pages/InboxPage.tsx(38,10): error TS6133: 'uniqueWorkers' is declared but its value is never read.
+src/pages/InboxPage.tsx(61,16): error TS2345: Argument of type 'PendingItem[]' is not assignable to parameter of type 'SetStateAction<PendingItem[]>'.
+src/pages/InboxPage.tsx(66,75): error TS2339: Property 'actor' does not exist on type 'PendingItem'.
+src/pages/InboxPage.tsx(346,9): error TS2322: Type '({ key: string; label: Element; render: (item: PendingItem) => Element; sortable: boolean; } | { key: string; label: string; sortable: boolean; render?: undefined; } | { ...; } | { ...; })[]' is not assignable to type 'Column<PendingItem>[]'.
+src/pages/InvoicesPage.tsx(2,1): error TS6133: 'Link' is declared but its value is never read.
+src/pages/InvoicesPage.tsx(180,47): error TS2304: Cannot find name 'token'.
+src/pages/LoginPage.tsx(12,9): error TS6133: 'showToast' is declared but its value is never read.
+src/pages/SettingsPage.tsx(7,26): error TS2307: Cannot find module '@/components/ui/use-toast' or its corresponding type declarations.
+src/pages/SettingsPage.tsx(540,32): error TS2322: Type '"default" | "destructive"' is not assignable to type 'BadgeVariant'.
+src/pages/SettingsPage.tsx(566,34): error TS2322: Type '"default" | "outline"' is not assignable to type 'BadgeVariant'.
+src/pages/SettingsPage.tsx(578,34): error TS2322: Type '"default"' is not assignable to type 'BadgeVariant'.
+src/pages/SettingsPage.tsx(672,32): error TS2322: Type '"secondary"' is not assignable to type 'BadgeVariant'.
+src/pages/SettingsPage.tsx(684,36): error TS2322: Type '"destructive"' is not assignable to type 'BadgeVariant'.
+src/pages/SettingsPage.tsx(711,36): error TS2322: Type '"default"' is not assignable to type 'BadgeVariant'.
+src/pages/SettingsPage.tsx(738,36): error TS2322: Type '"default"' is not assignable to type 'BadgeVariant'.
+src/pages/ShiftsPage.tsx(28,12): error TS6133: 'page' is declared but its value is never read.
+src/pages/ShiftsPage.tsx(28,26): error TS6133: 'limit' is declared but its value is never read.
+src/pages/TasksPage.tsx(29,12): error TS6133: 'page' is declared but its value is never read.
+src/pages/TasksPage.tsx(29,26): error TS6133: 'limit' is declared but its value is never read.
+

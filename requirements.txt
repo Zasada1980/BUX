@@ -1,0 +1,11 @@
+# Зависимости проекта TelegramOllama
+# Innovator Upgrade Pack устанавливается через: pip install -e ../innovator-upgrade-pack
+
+# OCR dependencies (Phase 13 Task 4)
+pytesseract>=0.3.10
+Pillow>=10.0.0
+
+# Добавьте внешние зависимости здесь
+# Пример:
+# aiogram==3.0.0
+# ollama==0.1.0
