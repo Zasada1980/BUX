@@ -12,7 +12,8 @@ COPY . /app
 RUN mkdir -p /app/db
 
 # CI-8E: Create symlink for api.* imports (supports 'from api.xxx' in tests)
-RUN ln -s . api
+RUN if [ ! -e api ]; then ln -s . api; fi
 
 EXPOSE 8080
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+

@@ -298,3 +298,4 @@ pytest api/tests/ -v --tb=short
 
 **Last Updated**: 2025-11-18 13:22 UTC
 **Status**: 2/6 files complete (test_auth.py, test_employees.py), 17/36 tests migrated (47%)
+

@@ -11,7 +11,6 @@ This index supports efficient queries like:
 Matches __table_args__ in api/models.py (CI-7B).
 """
 from alembic import op
-import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
@@ -37,3 +36,4 @@ def upgrade() -> None:
 def downgrade() -> None:
     """Remove composite index."""
     op.drop_index('ix_channel_messages_entity_lookup', table_name='channel_messages')
+

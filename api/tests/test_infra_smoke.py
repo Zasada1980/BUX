@@ -12,7 +12,6 @@ CI-6 Refactoring:
 - Use conftest fixtures: db_engine_and_session, seed_telegram_admin, db_session
 - Removed 3 xfail decorators (seed_telegram_admin provides admin user)
 """
-import pytest
 from sqlalchemy import inspect
 from api.models import TelegramUser, ChannelMessage
 
@@ -135,3 +134,4 @@ def test_channel_message_crud(db_session):
     # Verify deleted
     deleted = db_session.query(ChannelMessage).filter_by(id=msg.id).first()
     assert deleted is None, "Channel message not deleted"
+

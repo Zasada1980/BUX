@@ -10,7 +10,6 @@ Enables auto-update (edit vs new post) for preview messages.
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import sqlite
 
 
 # revision identifiers, used by Alembic.
@@ -46,3 +45,4 @@ def downgrade() -> None:
     op.drop_index('ix_channel_messages_message_id', table_name='channel_messages')
     op.drop_index('ix_channel_messages_channel_id', table_name='channel_messages')
     op.drop_table('channel_messages')
+
