@@ -1,5 +1,5 @@
 """SQLAlchemy models for TelegramOllama API."""
-from sqlalchemy import Column, Integer, String, DateTime, BigInteger, Date, Numeric, func, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, BigInteger, Date, Numeric, func, Boolean, ForeignKey, Index
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -108,6 +108,10 @@ class ChannelMessage(Base):
     content_hash = Column(String(64), nullable=True)  # SHA256 for change detection
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        Index("ix_channel_messages_entity_lookup", "entity_type", "entity_id"),
+    )
 
 
 class Client(Base):

@@ -39,7 +39,7 @@ def test_infra_1_model(db_engine_and_session):
     assert "ix_telegram_users_role" in index_names, "Missing role index"
 
 
-@pytest.mark.xfail(reason="Composite index ix_channel_messages_entity_lookup not defined in models.py (technical debt - CI-6)")
+# CI-7B: Composite index ix_channel_messages_entity_lookup added in models.py
 def test_infra_2_model(db_engine_and_session):
     """Test INFRA-2: ChannelMessage model and table."""
     engine, SessionLocal, Base = db_engine_and_session
