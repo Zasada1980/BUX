@@ -84,6 +84,8 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
           # Use in-memory SQLite for tests
           DB_PATH: ":memory:"
+          # Disable langsmith pytest plugin (incompatible with pydantic 2.5.3 + Python 3.12)
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
 
       - name: Upload pytest results
         if: always()
