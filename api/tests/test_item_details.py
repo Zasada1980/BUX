@@ -76,7 +76,7 @@ def session():
     engine.dispose()
 
 
-@pytest.mark.xfail(reason="pricing.yml config missing - PricingError (CI-5)")
+# CI-7C: rules/global.yaml added to satisfy pricing requirements
 def test_task_details_deterministic(session):
     """G3: 3 sequential calls → identical pricing_sha, steps, total."""
     # Setup: create shift and task
@@ -131,7 +131,7 @@ def test_task_details_deterministic(session):
     assert isinstance(first["total"], Decimal)
 
 
-@pytest.mark.xfail(reason="pricing.yml config missing - PricingError (CI-5)")
+# CI-7C: rules/global.yaml added to satisfy pricing requirements
 def test_expense_details_ils_currency(session):
     """G3: expense details use Decimal with ≤2 decimal places."""
     # Setup
@@ -159,7 +159,7 @@ def test_expense_details_ils_currency(session):
     assert isinstance(steps[0]["value"], Decimal)
 
 
-@pytest.mark.xfail(reason="pricing.yml config missing - PricingError (CI-5)")
+# CI-7C: rules/global.yaml added to satisfy pricing requirements
 def test_rules_pin(session):
     """G3: rules_sha matches file SHA."""
     # Setup
