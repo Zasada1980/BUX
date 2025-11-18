@@ -1,0 +1,46 @@
+# Pricing Rules for TelegramOllama
+# Version: 1 (CI-7C baseline)
+#
+# ⚠️  WARNING: These are TEST/DEVELOPMENT values for CI-7C test suite stabilization.
+# Production deployments MUST use real pricing rules based on business requirements.
+#
+# Created: 2025-11-18 (CI-7C task)
+# Purpose: Satisfy api/tests/test_item_details.py requirements
+# TODO: Replace with production pricing configuration before cloud deployment
+
+version: 1
+
+# Task rates (ILS - Israeli Shekels)
+rates:
+  hour_electric:
+    value: 800  # ILS per hour (electrical work)
+    unit: hour
+    description: "Hourly rate for electrical installation work"
+  
+  piece_demo:
+    value: 50   # ILS per piece (demo task type)
+    unit: piece
+    description: "Piece rate for demo tasks (CI-5 test baseline)"
+
+# Expense categories
+expenses:
+  материалы:
+    max_amount: 10000  # ILS (materials category)
+    description: "Construction materials and supplies"
+  
+  транспорт:
+    max_amount: 5000   # ILS (transport category)
+    description: "Transportation and fuel expenses"
+
+# Pricing modifiers (future-proof for modifier tests)
+modifiers:
+  weekend:
+    add_percent: 25  # +25% for Saturday/Sunday work
+    description: "Weekend work premium"
+  
+  night_shift:
+    add_percent: 15  # +15% for 22:00-06:00 shifts
+    description: "Night shift premium"
+
+# Rounding precision for all monetary calculations
+rounding: 2  # Decimal places (ILS uses 2 decimal places: ₪123.45)

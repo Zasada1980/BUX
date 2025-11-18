@@ -9,7 +9,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 # Import only necessary modules (avoid full app import)
-from api.pricing import explain_task, explain_expense, PricingError
+from api.pricing import explain_task, explain_expense, PricingError, RULES_PATHS
 
 
 # Test DB setup
@@ -177,7 +177,7 @@ def test_rules_pin(session):
     steps, total, rules_version, rules_sha = explain_task(1, session)
     
     # Verify rules_sha matches file
-    rules_path = Path("rules/global.yaml")
+    rules_path = RULES_PATHS[0]
     expected_sha = hashlib.sha256(rules_path.read_bytes()).hexdigest()[:12]
     assert rules_sha == expected_sha, f"rules_sha mismatch: got {rules_sha}, expected {expected_sha}"
     
@@ -195,6 +195,9 @@ def test_404_422(session):
     # 404: nonexistent expense
     with pytest.raises(PricingError, match="not found"):
         explain_expense(99999, session)
+
+
+
 
 
 
