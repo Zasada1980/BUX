@@ -192,3 +192,40 @@ def admin_headers(admin_token):
     Returns: dict {"Authorization": "Bearer <token>"}
     """
     return {"Authorization": f"Bearer {admin_token}"}
+
+@pytest.fixture(scope="session")
+def seed_telegram_admin(db_engine_and_session):
+    """
+    Seed TelegramUser admin for INFRA smoke tests.
+
+    Creates:
+    - TelegramUser (telegram_id=8473812812, user_id="admin_8473812812", role="admin")
+
+    Returns: tuple (telegram_id, user_id, role)
+    """
+    engine, SessionLocal, Base = db_engine_and_session
+    from api.models import TelegramUser
+
+    session = SessionLocal()
+
+    try:
+        # Check if admin TelegramUser already exists
+        existing = session.query(TelegramUser).filter_by(telegram_id=8473812812).first()
+        if existing:
+            return (8473812812, "admin_8473812812", "admin")
+
+        # Create admin TelegramUser
+        admin = TelegramUser(
+            telegram_id=8473812812,
+            user_id="admin_8473812812",
+            role="admin",
+            display_name="Test Admin",
+            is_active=1
+        )
+        session.add(admin)
+        session.commit()
+
+        return (8473812812, "admin_8473812812", "admin")
+
+    finally:
+        session.close()
