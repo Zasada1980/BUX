@@ -88,17 +88,23 @@ def test_token_refresh(client, seed_admin):
 
 
 def test_jwt_token_validation(admin_token):
-    """Test JWT token structure and claims."""
-    # Decode without verification (check structure only)
-    payload = jwt.decode(admin_token, options={"verify_signature": False})
-    
-    assert "sub" in payload, "Missing 'sub' claim (username)"
-    assert "user_id" in payload, "Missing 'user_id' claim"
-    assert "role" in payload, "Missing 'role' claim"
-    assert "exp" in payload, "Missing 'exp' claim (expiration)"
-    
-    # Verify username claim (cannot verify signature without knowing SECRET_KEY)
+    """Test JWT token structure, claims, and signature (CI-7A enhancement)."""
+    # 1) Soft check: Structure validation (no signature verification)
+    payload_no_sig = jwt.decode(admin_token, options={"verify_signature": False})
+    assert "sub" in payload_no_sig, "Missing 'sub' claim (username)"
+    assert "user_id" in payload_no_sig, "Missing 'user_id' claim"
+    assert "role" in payload_no_sig, "Missing 'role' claim"
+    assert "exp" in payload_no_sig, "Missing 'exp' claim (expiration)"
+
+    # 2) Hard check: Signature verification with real secret (CI-7A NEW)
+    from api.auth import JWT_SECRET_KEY, JWT_ALGORITHM
+    payload = jwt.decode(admin_token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+   
     assert payload["sub"] == "admin", f"Expected sub='admin', got {payload['sub']}"
+    assert payload["user_id"] is not None, "user_id should not be None"
+    assert "exp" in payload, "JWT must have expiration"
+
+
 def test_password_hashing(db_session, seed_admin):
     """Test bcrypt password hashing."""
     from api.models import AuthCredential  # Changed from api.models_users
