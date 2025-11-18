@@ -14,7 +14,9 @@ env.cloud
 # ═══════════════════════════════════════════════════════════════
 # Database Files
 # ═══════════════════════════════════════════════════════════════
-db/
+db/*.db
+db/*.sqlite*
+db/**/test_*.db
 *.db
 *.db.backup*
 *.db_backup*
@@ -23,6 +25,9 @@ db/
 *.db-wal
 *.sqlite
 *.sqlite3
+
+# Keep Alembic migrations
+!db/alembic/
 
 # ═══════════════════════════════════════════════════════════════
 # Backups & Exports
