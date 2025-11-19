@@ -11,29 +11,76 @@ jobs:
     name: Web UI E2E Tests
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: api/web
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r api/requirements.txt
+
+      - name: Setup database and run migrations
+        working-directory: .
+        run: |
+          mkdir -p db
+          cd db
+          python -m alembic upgrade head
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          DB_PATH: db/shifts.e2e.db
+
+      - name: Seed test data
+        working-directory: .
+        run: |
+          python -m api.seeds.seed_e2e_minimal
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          DB_PATH: db/shifts.e2e.db
+
+      - name: Start FastAPI backend
+        working-directory: .
+        run: |
+          nohup python -m uvicorn api.main:app --host 0.0.0.0 --port 8188 > api.log 2>&1 &
+          sleep 5
+          curl -f http://localhost:8188/health || (cat api.log && exit 1)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          DB_PATH: db/shifts.e2e.db
+          ADMIN_SECRET: test-secret-key
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install dependencies
+      - name: Install Node dependencies
+        working-directory: api/web
         run: npm ci
 
       - name: Install Playwright browsers
+        working-directory: api/web
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E tests
+        working-directory: api/web
         run: npm run test:e2e
         env:
           CI: true
+
+      - name: Upload API logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-logs
+          path: api.log
+          retention-days: 7
 
       - name: Upload Playwright report
         if: always()
