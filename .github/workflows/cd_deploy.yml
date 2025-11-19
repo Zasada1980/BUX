@@ -149,7 +149,7 @@ jobs:
       - name: Fetch deployment report
         run: |
           ssh -i ~/.ssh/id_ed25519 root@${{ env.HETZNER_HOST }} \
-            "cat ${{ env.DEPLOY_PATH }}/cloud_deployment_*.json | tail -1" > deployment_report.json
+            "ls -t ${{ env.DEPLOY_PATH }}/cloud_deployment_*.json | head -1 | xargs cat" > deployment_report.json
           
           echo "## 🚀 Deployment Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
