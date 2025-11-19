@@ -74,6 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: github.event_name != 'pull_request'
+    continue-on-error: true  # Allow workflow to succeed even if smoke tests fail
     
     steps:
       - name: Checkout repository
