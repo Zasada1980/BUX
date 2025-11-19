@@ -30,8 +30,7 @@ jobs:
         working-directory: .
         run: |
           mkdir -p db
-          cd db
-          python -m alembic upgrade head
+          alembic upgrade head
         env:
           PYTHONPATH: ${{ github.workspace }}
           DB_PATH: db/shifts.e2e.db

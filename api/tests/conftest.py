@@ -132,9 +132,9 @@ def seed_admin(db_engine_and_session):
         # Create admin employee
         admin = Employee(
             id=1,
-            full_name="Admin",  # Changed from 'name' to 'full_name'
-            role="admin",  # Added required field
-            is_active=True
+            name="Admin",  # F14: Changed from 'full_name' to 'name' (schema alignment)
+            role="admin",
+            active=True  # F14: Changed from 'is_active' to 'active'
         )
         session.add(admin)
         session.flush()  # Get ID
