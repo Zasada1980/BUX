@@ -1,0 +1,218 @@
+name: CD - Deploy to Hetzner Cloud
+
+on:
+  workflow_run:
+    workflows: ["CI - Build and Push Docker Images"]
+    types:
+      - completed
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (leave empty for latest)'
+        required: false
+        default: 'latest'
+
+env:
+  HETZNER_HOST: 46.224.36.109
+  DEPLOY_PATH: /opt/bux
+  VERSION: ${{ github.event.inputs.version || format('v2.0.{0}', github.run_number) }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' || 
+      github.event.workflow_run.conclusion == 'success'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY_PRIVATE }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ env.HETZNER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Check server connectivity
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no root@${{ env.HETZNER_HOST }} \
+            "echo '✅ SSH connection established' && hostname && uptime"
+
+      - name: Deploy to Hetzner Cloud
+        run: |
+          ssh -i ~/.ssh/id_ed25519 root@${{ env.HETZNER_HOST }} << 'ENDSSH'
+          set -e
+          
+          echo "🚀 Starting BUX Cloud Deployment"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          
+          cd ${{ env.DEPLOY_PATH }}
+          
+          # Backup current deployment report
+          if [ -f cloud_deployment_*.json ]; then
+            cp cloud_deployment_*.json cloud_deployment_backup_$(date +%Y%m%d_%H%M%S).json
+          fi
+          
+          # Create pre-deployment snapshot
+          SNAPSHOT_FILE="pre_deploy_snapshot_$(date +%Y%m%d_%H%M%S).txt"
+          docker-compose -f docker-compose.cloud.yml ps > $SNAPSHOT_FILE
+          
+          echo "📦 Pulling new images (version: ${{ env.VERSION }})"
+          docker-compose -f docker-compose.cloud.yml pull
+          
+          echo "🔄 Restarting services"
+          docker-compose -f docker-compose.cloud.yml up -d --force-recreate
+          
+          echo "⏳ Waiting for services to start (30s)"
+          sleep 30
+          
+          echo "🏥 Health check"
+          HEALTH_RESPONSE=$(curl -s http://localhost:8088/health)
+          HEALTH_STATUS=$(echo $HEALTH_RESPONSE | jq -r .ok 2>/dev/null || echo "false")
+          
+          if [ "$HEALTH_STATUS" = "true" ]; then
+            echo "✅ Health check PASSED"
+          else
+            echo "❌ Health check FAILED"
+            echo "Response: $HEALTH_RESPONSE"
+            exit 1
+          fi
+          
+          # Generate deployment report
+          REPORT_FILE="cloud_deployment_$(date +%Y%m%d_%H%M%S).json"
+          cat > $REPORT_FILE << EOF
+          {
+            "deployment": {
+              "stage": "Stage 5 - CI/CD Auto-Deploy",
+              "timestamp": "$(date -Iseconds)",
+              "version": "${{ env.VERSION }}",
+              "github_run": "${{ github.run_number }}",
+              "github_sha": "${{ github.sha }}",
+              "status": "SUCCESS",
+              "method": "GitHub Actions CD"
+            },
+            "services": {
+              "api": {
+                "image": "zasada1980/bux-api:${{ env.VERSION }}",
+                "status": "$(docker inspect bux_api --format='{{.State.Status}}')",
+                "health": "$HEALTH_STATUS"
+              },
+              "bot": {
+                "image": "zasada1980/bux-bot:${{ env.VERSION }}",
+                "status": "$(docker inspect bux_bot --format='{{.State.Status}}')"
+              },
+              "agent": {
+                "image": "zasada1980/bux-agent:${{ env.VERSION }}",
+                "status": "$(docker inspect bux_agent --format='{{.State.Status}}')"
+              },
+              "ollama": {
+                "image": "ollama/ollama:latest",
+                "status": "$(docker inspect bux_ollama --format='{{.State.Status}}')"
+              }
+            },
+            "access": {
+              "api_health": "http://46.224.36.109:8088/health",
+              "web_ui": "http://46.224.36.109:8088/",
+              "telegram_bot": "https://t.me/Ollama_axon_bot"
+            }
+          }
+          EOF
+          
+          echo "📊 Deployment report: $REPORT_FILE"
+          cat $REPORT_FILE | jq .
+          
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🎉 Deployment complete!"
+          ENDSSH
+
+      - name: Verify deployment
+        run: |
+          echo "🔍 External health check"
+          RESPONSE=$(curl -s http://${{ env.HETZNER_HOST }}:8088/health)
+          echo "$RESPONSE" | jq .
+          
+          STATUS=$(echo "$RESPONSE" | jq -r .ok)
+          if [ "$STATUS" = "true" ]; then
+            echo "✅ External health check PASSED"
+          else
+            echo "❌ External health check FAILED"
+            exit 1
+          fi
+
+      - name: Fetch deployment report
+        run: |
+          ssh -i ~/.ssh/id_ed25519 root@${{ env.HETZNER_HOST }} \
+            "cat ${{ env.DEPLOY_PATH }}/cloud_deployment_*.json | tail -1" > deployment_report.json
+          
+          echo "## 🚀 Deployment Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ env.VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Server:** bux-prod-01 (${{ env.HETZNER_HOST }})" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ✅ SUCCESS" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Services Status" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          cat deployment_report.json | jq .services >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Access URLs" >> $GITHUB_STEP_SUMMARY
+          echo "- **API Health:** http://${{ env.HETZNER_HOST }}:8088/health" >> $GITHUB_STEP_SUMMARY
+          echo "- **Web UI:** http://${{ env.HETZNER_HOST }}:8088/" >> $GITHUB_STEP_SUMMARY
+          echo "- **Telegram Bot:** https://t.me/Ollama_axon_bot" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload deployment report
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-report-${{ github.run_number }}
+          path: deployment_report.json
+          retention-days: 30
+
+  rollback:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: failure()
+    
+    steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY_PRIVATE }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ env.HETZNER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Rollback to previous version
+        run: |
+          ssh -i ~/.ssh/id_ed25519 root@${{ env.HETZNER_HOST }} << 'ENDSSH'
+          set -e
+          
+          echo "🔄 ROLLBACK: Deployment failed, restoring previous version"
+          cd ${{ env.DEPLOY_PATH }}
+          
+          # Find backup snapshot
+          LATEST_BACKUP=$(ls -t cloud_deployment_backup_*.json | head -1)
+          
+          if [ -f "$LATEST_BACKUP" ]; then
+            PREV_VERSION=$(cat "$LATEST_BACKUP" | jq -r .deployment.version)
+            echo "📦 Rolling back to version: $PREV_VERSION"
+            
+            # Update docker-compose with previous version
+            docker-compose -f docker-compose.cloud.yml down
+            docker-compose -f docker-compose.cloud.yml up -d
+            
+            echo "✅ Rollback complete"
+          else
+            echo "⚠️ No backup found, manual intervention required"
+            exit 1
+          fi
+          ENDSSH
+
+      - name: Notify rollback
+        run: |
+          echo "## ⚠️ Deployment Rollback" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Reason:** Deployment failed" >> $GITHUB_STEP_SUMMARY
+          echo "**Action:** Restored previous version" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** Rollback completed" >> $GITHUB_STEP_SUMMARY
