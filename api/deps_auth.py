@@ -92,5 +92,5 @@ async def get_current_admin(
         "role": "admin",
         "source": "jwt",
         "id": employee.id,
-        "name": employee.full_name,
+        "name": employee.name,
     }

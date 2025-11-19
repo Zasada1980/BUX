@@ -23,7 +23,7 @@ try:
     existing_employee = db.query(Employee).filter(Employee.role == 'admin').first()
     
     if existing_employee:
-        print(f"✅ Employee admin exists: ID={existing_employee.id}, name={existing_employee.full_name}")
+        print(f"✅ Employee admin exists: ID={existing_employee.id}, name={existing_employee.name}")
     else:
         # Create employee admin
         employee = Employee(
@@ -55,7 +55,7 @@ try:
     all_employees = db.query(Employee).all()
     print(f"\n📋 Total employees: {len(all_employees)}")
     for emp in all_employees:
-        print(f"  - ID={emp.id}, name={emp.full_name}, role={emp.role}, active={emp.is_active}")
+        print(f"  - ID={emp.id}, name={emp.name}, role={emp.role}, active={emp.active}")
 
 except Exception as e:
     print(f"❌ Error: {e}")

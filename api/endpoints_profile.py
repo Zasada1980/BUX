@@ -68,7 +68,7 @@ async def get_profile(
     
     return ProfileOut(
         id=employee.id,
-        name=employee.full_name,  # F4.4: Employee model uses full_name, not name
+        name=employee.name,  # F4.4: Employee model uses full_name, not name
         email=employee.email if hasattr(employee, 'email') else None,  # email may not exist in current schema
         role=employee.role,
         created_at=employee.created_at,

@@ -53,11 +53,11 @@ async def list_employees(
         query = query.filter(Employee.role == role)
     
     if is_active is not None:
-        query = query.filter(Employee.is_active == is_active)
+        query = query.filter(Employee.active == is_active)
     
     if search:
         query = query.filter(
-            func.lower(Employee.full_name).contains(search.lower())
+            func.lower(Employee.name).contains(search.lower())
         )
     
     # Count total
@@ -121,7 +121,7 @@ async def create_employee(
     # Create employee
     employee = Employee(
         telegram_id=data.telegram_id,
-        full_name=data.full_name,
+        full_name=data.name,
         role=data.role,
         is_active=True
     )
@@ -167,14 +167,14 @@ async def update_employee(
         )
     
     # Update fields
-    if data.full_name is not None:
-        employee.full_name = data.full_name
+    if data.name is not None:
+        employee.name = data.name
     
     if data.role is not None:
         employee.role = data.role
     
-    if data.is_active is not None:
-        employee.is_active = data.is_active
+    if data.active is not None:
+        employee.active = data.active
     
     employee.updated_at = datetime.now(timezone.utc)
     db.commit()
@@ -219,7 +219,7 @@ async def delete_employee(
     
     # Soft delete
     employee.deleted_at = datetime.now(timezone.utc)
-    employee.is_active = False
+    employee.active = False
     db.commit()
     
     return None

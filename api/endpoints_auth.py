@@ -80,7 +80,7 @@ async def telegram_login(auth_data: TelegramLoginData, db: Session = Depends(get
         db.commit()
         db.refresh(employee)
     
-    if not employee.is_active:
+    if not employee.active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account disabled"
@@ -97,7 +97,7 @@ async def telegram_login(auth_data: TelegramLoginData, db: Session = Depends(get
         expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         role=employee.role,
         user_id=employee.id,
-        name=employee.full_name,
+        name=employee.name,
         telegram_id=employee.telegram_id
     )
 
@@ -160,7 +160,7 @@ async def password_login(credentials: PasswordLoginIn, db: Session = Depends(get
         Employee.id == auth_cred.employee_id
     ).first()
     
-    if not employee or not employee.is_active:
+    if not employee or not employee.active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account disabled"
@@ -176,7 +176,7 @@ async def password_login(credentials: PasswordLoginIn, db: Session = Depends(get
         expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         role=employee.role,
         user_id=employee.id,
-        name=employee.full_name,
+        name=employee.name,
         telegram_id=employee.telegram_id
     )
 
@@ -219,7 +219,7 @@ async def refresh_access_token(data: TokenRefreshIn, db: Session = Depends(get_d
     
     # Get employee
     employee = db.query(Employee).filter(Employee.id == employee_id).first()
-    if not employee or not employee.is_active:
+    if not employee or not employee.active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account disabled"
@@ -246,7 +246,7 @@ async def refresh_access_token(data: TokenRefreshIn, db: Session = Depends(get_d
         expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         role=employee.role,
         user_id=employee.id,
-        name=employee.full_name,
+        name=employee.name,
         telegram_id=employee.telegram_id
     )
 

@@ -174,18 +174,17 @@ class Employee(Base):
     Employee model for web interface authentication and management.
     Unified with TelegramUser via telegram_id (optional for password-only users).
     """
-    
-    __tablename__ = "employees"
-    
+
+    __tablename__ = "users"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     telegram_id = Column(BigInteger, unique=True, nullable=True, index=True)  # Optional (for Telegram OAuth)
-    full_name = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False)
     role = Column(String(50), nullable=False, index=True)  # admin, foreman, worker
-    is_active = Column(Boolean, nullable=False, default=True)
+    active = Column(Boolean, nullable=False, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    deleted_at = Column(DateTime(timezone=True), nullable=True)  # Soft delete
-    
+
     # Relationships
     auth_credentials = relationship("AuthCredential", back_populates="employee", cascade="all, delete-orphan")
     refresh_tokens = relationship("RefreshToken", back_populates="employee", cascade="all, delete-orphan")
@@ -198,9 +197,9 @@ class AuthCredential(Base):
     """
     
     __tablename__ = "auth_credentials"
-    
+
     id = Column(Integer, primary_key=True, autoincrement=True)
-    employee_id = Column(Integer, ForeignKey("employees.id", ondelete="CASCADE"), nullable=False, index=True)
+    employee_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     username = Column(String(100), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
     failed_attempts = Column(Integer, nullable=False, default=0)
@@ -219,9 +218,9 @@ class RefreshToken(Base):
     """
     
     __tablename__ = "refresh_tokens"
-    
+
     id = Column(Integer, primary_key=True, autoincrement=True)
-    employee_id = Column(Integer, ForeignKey("employees.id", ondelete="CASCADE"), nullable=False, index=True)
+    employee_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     token = Column(String(500), unique=True, nullable=False, index=True)
     expires_at = Column(DateTime(timezone=True), nullable=False, index=True)
     revoked = Column(Boolean, nullable=False, default=False)

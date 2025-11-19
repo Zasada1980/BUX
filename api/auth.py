@@ -164,7 +164,7 @@ async def get_current_employee(
             detail="Employee not found"
         )
     
-    if not employee.is_active:
+    if not employee.active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account disabled"
