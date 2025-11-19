@@ -130,17 +130,21 @@ jobs:
 
       - name: Verify deployment
         run: |
-          echo "🔍 External health check"
-          RESPONSE=$(curl -s http://${{ env.HETZNER_HOST }}:8088/health)
+          echo "🔍 Health check via SSH (API bound to 127.0.0.1)"
+          ssh -i ~/.ssh/id_ed25519 root@${{ env.HETZNER_HOST }} << 'ENDSSH'
+          set -e
+          
+          RESPONSE=$(curl -s http://localhost:8088/health)
           echo "$RESPONSE" | jq .
           
           STATUS=$(echo "$RESPONSE" | jq -r .ok)
           if [ "$STATUS" = "true" ]; then
-            echo "✅ External health check PASSED"
+            echo "✅ Health check PASSED"
           else
-            echo "❌ External health check FAILED"
+            echo "❌ Health check FAILED"
             exit 1
           fi
+          ENDSSH
 
       - name: Fetch deployment report
         run: |
