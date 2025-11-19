@@ -2,6 +2,8 @@
 
 > **Система учёта рабочего времени и расходов для малого бизнеса с Telegram-ботом и AI-агентом**
 
+<!-- CI-15 trigger: Test langsmith fix after workflow syntax correction -->
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/docker-required-blue.svg)](https://www.docker.com/)
