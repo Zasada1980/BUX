@@ -40,7 +40,7 @@ async def list_employees(
     - Foreman: sees only assigned workers (row-level security)
     - Worker: forbidden
     """
-    query = db.query(Employee).filter(Employee.deleted_at.is_(None))
+    query = db.query(Employee).filter(Employee.active.is_(True))  # Filter by active status instead of deleted_at
     
     # RBAC row-level filtering
     if employee.role == "foreman":
@@ -70,7 +70,7 @@ async def list_employees(
     # Add has_password flag
     employees_out = []
     for emp in employees_list:
-        emp_out = EmployeeOut.from_orm(emp)
+        emp_out = EmployeeOut.model_validate(emp)  # Pydantic v2
         emp_out.has_password = db.query(AuthCredential).filter(
             AuthCredential.employee_id == emp.id
         ).first() is not None
@@ -99,7 +99,7 @@ async def create_employee(
     if data.telegram_id:
         existing = db.query(Employee).filter(
             Employee.telegram_id == data.telegram_id,
-            Employee.deleted_at.is_(None)
+            Employee.active.is_(True)
         ).first()
         if existing:
             raise HTTPException(
@@ -121,9 +121,9 @@ async def create_employee(
     # Create employee
     employee = Employee(
         telegram_id=data.telegram_id,
-        full_name=data.name,
+        name=data.name,  # F14: Changed from full_name
         role=data.role,
-        is_active=True
+        active=True  # F14: Changed from is_active
     )
     db.add(employee)
     db.flush()  # Get employee.id
@@ -141,7 +141,7 @@ async def create_employee(
     db.commit()
     db.refresh(employee)
     
-    emp_out = EmployeeOut.from_orm(employee)
+    emp_out = EmployeeOut.model_validate(employee)  # Pydantic v2
     emp_out.has_password = data.username is not None
     
     return emp_out
@@ -157,7 +157,7 @@ async def update_employee(
     """Update employee details (admin only)."""
     employee = db.query(Employee).filter(
         Employee.id == employee_id,
-        Employee.deleted_at.is_(None)
+        Employee.active.is_(True)
     ).first()
     
     if not employee:
@@ -180,7 +180,7 @@ async def update_employee(
     db.commit()
     db.refresh(employee)
     
-    emp_out = EmployeeOut.from_orm(employee)
+    emp_out = EmployeeOut.model_validate(employee)  # Pydantic v2
     emp_out.has_password = db.query(AuthCredential).filter(
         AuthCredential.employee_id == employee.id
     ).first() is not None
@@ -195,13 +195,13 @@ async def delete_employee(
     db: Session = Depends(get_db)
 ):
     """
-    Soft delete employee (sets deleted_at timestamp).
+    Soft delete employee (sets active=False).
     
     Preserves data for audit trail.
     """
     employee = db.query(Employee).filter(
         Employee.id == employee_id,
-        Employee.deleted_at.is_(None)
+        Employee.active.is_(True)
     ).first()
     
     if not employee:
@@ -217,8 +217,7 @@ async def delete_employee(
             detail="Cannot delete your own account"
         )
     
-    # Soft delete
-    employee.deleted_at = datetime.now(timezone.utc)
+    # Soft delete by setting active=False
     employee.active = False
     db.commit()
     
@@ -234,7 +233,7 @@ async def get_employee(
     """Get employee details by ID."""
     employee = db.query(Employee).filter(
         Employee.id == employee_id,
-        Employee.deleted_at.is_(None)
+        Employee.active.is_(True)
     ).first()
     
     if not employee:
@@ -250,7 +249,7 @@ async def get_employee(
             detail="Insufficient permissions"
         )
     
-    emp_out = EmployeeOut.from_orm(employee)
+    emp_out = EmployeeOut.model_validate(employee)  # Pydantic v2
     emp_out.has_password = db.query(AuthCredential).filter(
         AuthCredential.employee_id == employee.id
     ).first() is not None
