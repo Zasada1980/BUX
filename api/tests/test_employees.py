@@ -36,9 +36,9 @@ def test_list_employees(client, admin_headers):
     # Check structure
     admin = employees[0]
     assert "id" in admin, "Missing 'id' field"
-    assert "full_name" in admin or "username" in admin, "Missing 'full_name' or 'username' field"
+    assert "name" in admin, "Missing 'name' field (F14 schema)"  # Changed from full_name
     assert "role" in admin, "Missing 'role' field"
-    assert "is_active" in admin, "Missing 'is_active' field"
+    assert "active" in admin, "Missing 'active' field (F14 schema)"  # Changed from is_active
 
 
 def test_get_employee_by_id(client, admin_headers):
@@ -66,7 +66,7 @@ def test_create_employee(client, admin_headers):
     telegram_id = random.randint(100000000, 999999999)
     
     new_employee = {
-        "full_name": "Test Worker",
+        "name": "Test Worker",  # F14: Changed from full_name
         "role": "worker",
         "telegram_id": telegram_id,
         "password": "worker123"
@@ -78,9 +78,9 @@ def test_create_employee(client, admin_headers):
     created = response.json()
     
     assert "id" in created, "Missing 'id' in response"
-    assert created["full_name"] == "Test Worker"
+    assert created["name"] == "Test Worker"  # F14: Changed from full_name
     assert created["role"] == "worker"
-    assert created["is_active"] is True
+    assert created["active"] is True  # F14: Changed from is_active
 
 
 def test_update_employee(client, admin_headers):
@@ -88,7 +88,7 @@ def test_update_employee(client, admin_headers):
     # Create employee first (with unique telegram_id)
     telegram_id = random.randint(100000000, 999999999)
     new_employee = {
-        "full_name": "Update Test Worker",
+        "name": "Update Test Worker",  # F14: Changed from full_name
         "role": "worker",
         "telegram_id": telegram_id,
         "password": "worker123"
@@ -100,7 +100,7 @@ def test_update_employee(client, admin_headers):
     
     # Update
     updates = {
-        "full_name": "Updated Worker",
+        "name": "Updated Worker",  # F14: Changed from full_name
         "role": "foreman"
     }
     
@@ -109,16 +109,16 @@ def test_update_employee(client, admin_headers):
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     updated = response.json()
     
-    assert updated["full_name"] == "Updated Worker"
+    assert updated["name"] == "Updated Worker"  # F14: Changed from full_name
     assert updated["role"] == "foreman"
 
 
 def test_soft_delete_employee(client, admin_headers):
-    """Test DELETE /api/employees/{id} - Soft delete (sets deleted_at)."""
+    """Test DELETE /api/employees/{id} - Soft delete (sets active=False)."""
     # Create employee first (with unique telegram_id)
     telegram_id = random.randint(100000000, 999999999)
     new_employee = {
-        "full_name": "Delete Test Worker",
+        "name": "Delete Test Worker",  # F14: Changed from full_name
         "role": "worker",
         "telegram_id": telegram_id,
         "password": "worker123"
@@ -133,23 +133,17 @@ def test_soft_delete_employee(client, admin_headers):
     
     assert response.status_code in [200, 204], f"Expected 200/204, got {response.status_code}"
     
-    # Verify deleted (should return 404 or show deleted_at)
+    # Verify deleted (should return 404 since active=False filters out deleted)
     get_response = client.get(f"/api/employees/{employee_id}", headers=admin_headers)
     
-    if get_response.status_code == 200:
-        employee = get_response.json()
-        # Check if deleted_at is set or is_active is False
-        assert employee.get("deleted_at") is not None or employee.get("is_active") is False, \
-            "Employee should be marked as deleted"
-    else:
-        assert get_response.status_code == 404, "Deleted employee should return 404"
+    assert get_response.status_code == 404, "Deleted employee should return 404 (active=False filtered out)"
 
 
 def test_rbac_admin_can_create(client, admin_headers):
     """Test RBAC: Admin can create employees."""
     telegram_id = random.randint(100000000, 999999999)
     new_employee = {
-        "full_name": "RBAC Test Worker",
+        "name": "RBAC Test Worker",  # F14: Changed from full_name
         "role": "worker",
         "telegram_id": telegram_id,
         "password": "test12345"
@@ -165,7 +159,7 @@ def test_duplicate_username(client, admin_headers):
     # Create first employee
     telegram_id = random.randint(100000000, 999999999)
     first = {
-        "full_name": "First Employee",
+        "name": "First Employee",  # F14: Changed from full_name
         "role": "worker",
         "telegram_id": telegram_id,
         "password": "test12345"
@@ -176,7 +170,7 @@ def test_duplicate_username(client, admin_headers):
     
     # Try to create duplicate with same telegram_id
     duplicate = {
-        "full_name": "Duplicate Employee",
+        "name": "Duplicate Employee",  # F14: Changed from full_name
         "role": "worker",
         "telegram_id": telegram_id,  # Same telegram_id
         "password": "test12345"
@@ -193,7 +187,7 @@ def test_invalid_role(client, admin_headers):
     """Test POST /api/employees - Invalid role should fail."""
     telegram_id = random.randint(100000000, 999999999)
     invalid_employee = {
-        "full_name": "Invalid Role User",
+        "name": "Invalid Role User",  # F14: Changed from full_name
         "role": "superuser",  # Not a valid role
         "telegram_id": telegram_id,
         "password": "test12345"

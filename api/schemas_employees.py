@@ -7,7 +7,7 @@ from datetime import datetime
 class EmployeeCreateIn(BaseModel):
     """Create employee request."""
     telegram_id: Optional[int] = None
-    full_name: str = Field(..., min_length=1, max_length=255)
+    name: str = Field(..., min_length=1, max_length=255)  # Changed from full_name (F14)
     role: str = Field(..., pattern="^(admin|foreman|worker)$")
     username: Optional[str] = Field(None, min_length=3, max_length=100)  # For password auth
     password: Optional[str] = Field(None, min_length=8, max_length=255)  # For password auth
@@ -22,21 +22,20 @@ class EmployeeCreateIn(BaseModel):
 
 class EmployeeUpdateIn(BaseModel):
     """Update employee request."""
-    full_name: Optional[str] = Field(None, min_length=1, max_length=255)
+    name: Optional[str] = Field(None, min_length=1, max_length=255)  # Changed from full_name (F14)
     role: Optional[str] = Field(None, pattern="^(admin|foreman|worker)$")
-    is_active: Optional[bool] = None
+    active: Optional[bool] = None  # Changed from is_active (F14)
 
 
 class EmployeeOut(BaseModel):
     """Employee response."""
     id: int
     telegram_id: Optional[int]
-    full_name: str
+    name: str  # Changed from full_name (F14 schema alignment)
     role: str
-    is_active: bool
+    active: bool  # Changed from is_active (F14 schema alignment)
     created_at: datetime
     updated_at: datetime
-    deleted_at: Optional[datetime] = None
     has_password: bool = False  # Indicates if password auth is configured
     
     class Config:
