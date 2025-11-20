@@ -9,7 +9,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 # Import only necessary modules (avoid full app import)
-from api.pricing import explain_task, explain_expense, PricingError, RULES_PATHS
+from pricing import explain_task, explain_expense, PricingError, RULES_PATHS
 
 
 # Test DB setup

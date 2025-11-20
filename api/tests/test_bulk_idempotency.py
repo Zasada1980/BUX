@@ -14,7 +14,7 @@ CI-6 Refactoring:
 import pytest
 import time
 from sqlalchemy import text
-from api.utils.idempotency_guard import scope_hash, ensure_idempotent
+from utils.idempotency_guard import scope_hash, ensure_idempotent
 from fastapi import HTTPException
 
 

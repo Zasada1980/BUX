@@ -14,7 +14,7 @@ import tempfile
 import pytest
 from pathlib import Path
 
-# Add api/ to Python path (for imports like 'from api.models import ...')
+# Add /app to Python path (for imports like 'from models import ...')
 api_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(api_dir))
 
@@ -54,23 +54,23 @@ def app(test_db_path):
     """
     FastAPI app instance with test database.
     
-    Imports api.main:app AFTER test_db_path has set DB_PATH,
-    ensuring api.db.engine uses the test database.
+    Imports main:app AFTER test_db_path has set DB_PATH,
+    ensuring db.engine uses the test database.
     """
-    from api.main import app
+    from main import app
     return app
 
 
 @pytest.fixture(scope="session")
 def db_engine_and_session(app):
     """
-    Database engine and SessionLocal from api.db.
+    Database engine and SessionLocal from db module.
     
     Creates schema once for entire test session.
     Returns tuple: (engine, SessionLocal, Base)
     """
-    from api.db import engine, SessionLocal
-    from api.models import Base
+    from db import engine, SessionLocal
+    from models import Base
     
     # Create all tables
     Base.metadata.create_all(bind=engine)
@@ -118,7 +118,7 @@ def seed_admin(db_engine_and_session):
     Returns: tuple (employee_id, username, plaintext_password)
     """
     engine, SessionLocal, Base = db_engine_and_session
-    from api.models import Employee, AuthCredential  # Changed from api.models_users
+    from models import Employee, AuthCredential  # Changed from api.models_users
     import bcrypt  # Use bcrypt directly instead of passlib (compat issue with bcrypt 5.x)
     
     session = SessionLocal()
@@ -204,10 +204,9 @@ def seed_telegram_admin(db_engine_and_session):
     Returns: tuple (telegram_id, user_id, role)
     """
     engine, SessionLocal, Base = db_engine_and_session
-    from api.models import TelegramUser
-
+    from models import TelegramUser
+    
     session = SessionLocal()
-
     try:
         # Check if admin TelegramUser already exists
         existing = session.query(TelegramUser).filter_by(telegram_id=8473812812).first()
