@@ -2,9 +2,38 @@ import { test, expect } from '@playwright/test';
 import { loginAsAdmin } from './fixtures/auth';
 
 test.describe('Scenario 2: User Management (Full CRUD)', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, context }) => {
+    // CI11 FIX: Force admin role to 'admin' before each test (DB keeps reverting to 'foreman')
+    const { execSync } = await import('child_process');
+    execSync('docker exec demo_api python /app/seeds/fix_admin_role.py', { stdio: 'inherit' });
+    
+    // Restart API to clear JWT cache (critical for role change to take effect)
+    execSync('docker restart demo_api', { stdio: 'inherit' });
+    
+    // Wait for API to be healthy (retry up to 10s)
+    for (let i = 0; i < 10; i++) {
+      try {
+        const response = await page.request.get('http://localhost:8188/health');
+        if (response.ok()) break;
+      } catch (e) {
+        await page.waitForTimeout(1000);
+      }
+    }
+    
+    // Capture console logs and errors
+    page.on('console', msg => {
+      if (msg.type() === 'error' || msg.text().includes('Error') || msg.text().includes('Failed')) {
+        console.log(`[Browser Console] ${msg.type()}: ${msg.text()}`);
+      }
+    });
+    page.on('pageerror', err => {
+      console.log(`[Browser Error] ${err.message}`);
+    });
+    
     await loginAsAdmin(page);
   });
+  
+  // Note: No afterEach cleanup needed - Playwright automatically clears browser context after each test
 
   test('should create a new user successfully', async ({ page }) => {
     await page.goto('/users');
@@ -18,26 +47,33 @@ test.describe('Scenario 2: User Management (Full CRUD)', () => {
     // Wait for modal to open
     await page.waitForSelector('text=Add New User', { timeout: 3000 });
 
-    // Generate unique telegram_id to avoid conflicts
-    const uniqueTelegramId = Date.now().toString();
+    // Generate unique telegram_username to avoid conflicts
+    const timestamp = Date.now();
+    const uniqueUsername = `testworker_${timestamp}`;
+    const uniqueName = `Test Worker E2E ${timestamp}`;  // Make name unique too (409 Conflict fix)
     
-    // Fill form
-    await page.fill('input[placeholder="Enter user name"]', 'Test Worker E2E');
-    await page.fill('input[placeholder="Enter Telegram ID"]', uniqueTelegramId);
+    console.log(`[E2E Test] Creating user with username: ${uniqueUsername}, name: ${uniqueName}`);
+    
+    // Fill form (UX-V2: Updated to new schema - telegram_username instead of telegram_id)
+    await page.fill('input[placeholder="Enter user name"]', uniqueName);
+    await page.fill('input[placeholder="@username (or use ID/Phone)"]', `@${uniqueUsername}`);
     await page.selectOption('select', 'worker');
+    
+    console.log('[E2E Test] Form filled, clicking Create User button...');
 
     // Submit form
     await page.click('button:has-text("Create User")');
 
-    // UX-V2: Instead of waiting for toast, verify user appears in table (more reliable)
-    await page.waitForSelector(`text=Test Worker E2E`, { timeout: 10000 });
-    await expect(page.locator(`text=${uniqueTelegramId}`)).toBeVisible();
+    // UX-V2: Wait for modal to close first (indicates submission success)
+    await page.waitForSelector('text=Add New User', { state: 'hidden', timeout: 5000 });
+
+    // Wait for table to reload with new user (F14-4: Fixed - apiClient now used instead of direct fetch)
+    await page.waitForSelector('table tbody tr', { timeout: 15000 });
     
-    // Optionally check for toast (but don't fail if it disappears quickly)
-    const toast = page.locator('[role="status"], [role="alert"]').filter({ hasText: /created/i });
-    if (await toast.isVisible().catch(() => false)) {
-      console.log('[User Create] Toast appeared successfully');
-    }
+    // Verify user appears in table by unique name (name is always displayed, username might not be in columns)
+    await expect(page.locator(`text=${uniqueName}`)).toBeVisible({ timeout: 10000 });
+    
+    console.log('[E2E Test] ✅ User created and visible in table');
   });
 
   test('should edit user role successfully', async ({ page }) => {

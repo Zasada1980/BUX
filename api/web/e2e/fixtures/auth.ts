@@ -21,7 +21,13 @@ const ADMIN_CREDENTIALS = {
 };
 
 async function loginAsAdmin(page: Page) {
+  // CI11 FIX: Clear storage BEFORE navigating to ensure fresh auth state
+  await page.context().clearCookies();
   await page.goto('/login');
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
   
   // Wait for login form
   await page.waitForSelector('input[name="username"]', { timeout: 5000 });
@@ -33,16 +39,11 @@ async function loginAsAdmin(page: Page) {
   // Submit form
   await page.click('button[type="submit"]');
   
-  // Wait for API login call to complete
-  await page.waitForResponse(response => 
-    response.url().includes('/api/auth/login') && response.status() === 200,
-    { timeout: 10000 }
-  );
+  // Wait for redirect to /dashboard (AuthContext handles token storage)
+  await page.waitForURL('/dashboard', { timeout: 10000 });
   
-  // Wait for successful redirect to dashboard (after AuthContext processes token)
-  await page.waitForURL('**/dashboard', { timeout: 10000 });
-  
-  // No excessive delays needed - AuthContext is synchronous now
+  // Give AuthContext time to fully initialize user state
+  await page.waitForTimeout(500);
 }
 
 export { loginAsAdmin };
