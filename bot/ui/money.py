@@ -1,23 +1,45 @@
 # -*- coding: utf-8 -*-
 """
-Bot money formatter — интеграция api/utils/money.py для UI бота.
+Bot money formatter — автономная реализация (TD-BOT-ISO-1 hotfix).
 
 BK-8: Денежный рендер (ILS, RTL-safe)
+
+ПРИМЕЧАНИЕ: Встроенная копия fmt_money из api/utils/money.py для изоляции сервисов.
+Полное исправление TD-BOT-ISO-1 (HTTP API вместо импортов) — P2 приоритет, Phase 6+.
 """
 
 from decimal import Decimal
 from typing import Union
 
-# Import from API utils (api/utils/money.py from Φ0-P1)
-import sys
-from pathlib import Path
 
-# Add root directory to path for api.utils.money import
-root_path = Path(__file__).parent.parent.parent
-if str(root_path) not in sys.path:
-    sys.path.insert(0, str(root_path))
-
-from api.utils.money import fmt_money as _fmt_money
+def _fmt_money(amount: Decimal, currency: str = "ILS") -> str:
+    """
+    Форматирует денежную сумму с валютным символом и тысячами.
+    
+    Встроенная копия из api/utils/money.py для изоляции bot-сервиса.
+    
+    Args:
+        amount: Decimal сумма
+        currency: Валюта (только ILS)
+    
+    Returns:
+        Formatted string: LRM + ₪ + amount с тысячами
+    
+    Examples:
+        >>> _fmt_money(Decimal("123.45"))
+        '\\u200e₪123.45'
+        >>> _fmt_money(Decimal("1234567.8"))
+        '\\u200e₪1,234,567.80'
+    """
+    LRM = "\u200e"  # Left-to-Right Mark для RTL isolation
+    
+    if currency != "ILS":
+        raise ValueError(f"Unsupported currency: {currency}")
+    
+    # Format with 2 decimals and thousand separators
+    formatted = f"{amount:,.2f}"
+    
+    return f"{LRM}₪{formatted}"
 
 
 def fmt_amount(amount: Union[str, int, float, Decimal], currency: str = "ILS") -> str:
@@ -88,7 +110,8 @@ def fmt_amount_safe(amount_data: Union[str, int, float, Decimal, None],
 # Evidence metadata
 __evidence__ = {
     "functions": ["fmt_amount", "fmt_amount_safe"],
-    "depends_on": "api/utils/money.py (Φ0-P1)",
+    "depends_on": "NONE (embedded copy of api/utils/money.py)",
     "currency": "ILS only",
-    "version": "1.0.0-bk8",
+    "version": "1.0.1-td-bot-iso-hotfix",
+    "tech_debt": "TD-BOT-ISO-1 (use HTTP API instead of code sharing)",
 }

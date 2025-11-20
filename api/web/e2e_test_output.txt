@@ -1,0 +1,283 @@
+
+Running 6 tests using 1 worker
+
+[WebServer] 23:28:48 [vite] Pre-transform error: D:\TelegramOllama_ENV_DEMO\code\api\web\src\pages\ExpensesPage.tsx: Unexpected token (288:83)
+[WebServer] 
+[WebServer]   286 |           data={expenses}
+[WebServer]   287 |           keyExtractor={(expense) => expense.id}
+[WebServer] > 288 |           emptyMessage="No expenses match the current filters"h the current filters"
+[WebServer]       |                                                                                    ^
+[WebServer]   289 |         />
+[WebServer]   290 |       )}
+[WebServer]   291 |
+[WebServer] 23:28:48 [vite] Internal server error: D:\TelegramOllama_ENV_DEMO\code\api\web\src\pages\ExpensesPage.tsx: Unexpected token (288:83)
+[WebServer] 
+[WebServer]   286 |           data={expenses}
+[WebServer]   287 |           keyExtractor={(expense) => expense.id}
+[WebServer] > 288 |           emptyMessage="No expenses match the current filters"h the current filters"
+[WebServer]       |                                                                                    ^
+[WebServer]   289 |         />
+[WebServer]   290 |       )}
+[WebServer]   291 |
+[WebServer]   Plugin: vite:react-babel
+[WebServer]   File: D:/TelegramOllama_ENV_DEMO/code/api/web/src/pages/ExpensesPage.tsx:288:83
+[WebServer]   297|              onPageChange={setPage}
+[WebServer]   298|              itemsPerPage={limit}
+[WebServer]   299|              totalItems={totalItems}
+[WebServer]      |                                    ^
+[WebServer]   300|            />
+[WebServer]   301|          </div>
+[WebServer]       at constructor (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:367:19)
+[WebServer]       at TypeScriptParserMixin.raise (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6624:19)
+[WebServer]       at TypeScriptParserMixin.unexpected (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6644:16)
+[WebServer]       at TypeScriptParserMixin.jsxParseIdentifier (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4598:12)
+[WebServer]       at TypeScriptParserMixin.jsxParseNamespacedName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4605:23)
+[WebServer]       at TypeScriptParserMixin.jsxParseAttribute (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4681:22)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4696:28)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10100:18)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4691:17)
+[WebServer]       at TypeScriptParserMixin.jsxParseElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4715:33)
+[WebServer]       at TypeScriptParserMixin.jsxParseElement (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4778:17)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4788:19)
+[WebServer]       at TypeScriptParserMixin.parseExprSubscripts (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11145:23)
+[WebServer]       at TypeScriptParserMixin.parseUpdate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11130:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11110:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9890:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10963:61)
+[WebServer]       at TypeScriptParserMixin.parseExprOps (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10968:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10945:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9828:39
+[WebServer]       at TypeScriptParserMixin.tryParse (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6932:20)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9828:18)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10864:39
+[WebServer]       at TypeScriptParserMixin.allowInAnd (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12500:12)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssignAllowIn (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10864:17)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12567:17)
+[WebServer]       at TypeScriptParserMixin.parseParenAndDistinguishExpression (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11747:28)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11395:23)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4793:20)
+[WebServer]       at TypeScriptParserMixin.parseExprSubscripts (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11145:23)
+[WebServer]       at TypeScriptParserMixin.parseUpdate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11130:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11110:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9890:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10963:61)
+[WebServer]       at TypeScriptParserMixin.parseExprOps (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10968:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10945:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9839:20)
+[WebServer]       at TypeScriptParserMixin.parseConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10957:29)
+[WebServer]       at TypeScriptParserMixin.parseConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9664:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10949:17)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9839:20)
+[WebServer]       at TypeScriptParserMixin.parseExpressionBase (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10848:23)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10844:39
+[WebServer]       at TypeScriptParserMixin.allowInAnd (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12500:12)
+[WebServer]       at TypeScriptParserMixin.parseExpression (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10844:17)
+[WebServer]       at TypeScriptParserMixin.jsxParseExpressionContainer (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4661:31)
+[WebServer]       at TypeScriptParserMixin.jsxParseElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4740:36)
+  тЬШ  1 [chromium] тА║ e2e\user-management-smoke.spec.ts:9:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should create a new user successfully (5.2s)
+[WebServer] 23:28:54 [vite] Internal server error: D:\TelegramOllama_ENV_DEMO\code\api\web\src\pages\ExpensesPage.tsx: Unexpected token (288:83)
+[WebServer] 
+[WebServer]   286 |           data={expenses}
+[WebServer]   287 |           keyExtractor={(expense) => expense.id}
+[WebServer] > 288 |           emptyMessage="No expenses match the current filters"h the current filters"
+[WebServer]       |                                                                                    ^
+[WebServer]   289 |         />
+[WebServer]   290 |       )}
+[WebServer]   291 |
+[WebServer]   Plugin: vite:react-babel
+[WebServer]   File: D:/TelegramOllama_ENV_DEMO/code/api/web/src/pages/ExpensesPage.tsx:288:83
+[WebServer]   297|              onPageChange={setPage}
+[WebServer]   298|              itemsPerPage={limit}
+[WebServer]   299|              totalItems={totalItems}
+[WebServer]      |                                    ^
+[WebServer]   300|            />
+[WebServer]   301|          </div>
+[WebServer]       at constructor (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:367:19)
+[WebServer]       at TypeScriptParserMixin.raise (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6624:19)
+[WebServer]       at TypeScriptParserMixin.unexpected (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6644:16)
+[WebServer]       at TypeScriptParserMixin.jsxParseIdentifier (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4598:12)
+[WebServer]       at TypeScriptParserMixin.jsxParseNamespacedName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4605:23)
+[WebServer]       at TypeScriptParserMixin.jsxParseAttribute (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4681:22)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4696:28)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10100:18)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4691:17)
+[WebServer]       at TypeScriptParserMixin.jsxParseElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4715:33)
+[WebServer]       at TypeScriptParserMixin.jsxParseElement (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4778:17)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4788:19)
+[WebServer]       at TypeScriptParserMixin.parseExprSubscripts (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11145:23)
+[WebServer]       at TypeScriptParserMixin.parseUpdate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11130:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11110:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9890:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10963:61)
+[WebServer]       at TypeScriptParserMixin.parseExprOps (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10968:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10945:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9828:39
+[WebServer]       at TypeScriptParserMixin.tryParse (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6932:20)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9828:18)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10864:39
+[WebServer]       at TypeScriptParserMixin.allowInAnd (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12500:12)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssignAllowIn (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10864:17)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12567:17)
+[WebServer]       at TypeScriptParserMixin.parseParenAndDistinguishExpression (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11747:28)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11395:23)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4793:20)
+[WebServer]       at TypeScriptParserMixin.parseExprSubscripts (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11145:23)
+[WebServer]       at TypeScriptParserMixin.parseUpdate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11130:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11110:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9890:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10963:61)
+[WebServer]       at TypeScriptParserMixin.parseExprOps (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10968:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10945:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9839:20)
+[WebServer]       at TypeScriptParserMixin.parseConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10957:29)
+[WebServer]       at TypeScriptParserMixin.parseConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9664:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10949:17)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9839:20)
+[WebServer]       at TypeScriptParserMixin.parseExpressionBase (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10848:23)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10844:39
+[WebServer]       at TypeScriptParserMixin.allowInAnd (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12500:12)
+[WebServer]       at TypeScriptParserMixin.parseExpression (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10844:17)
+[WebServer]       at TypeScriptParserMixin.jsxParseExpressionContainer (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4661:31)
+[WebServer]       at TypeScriptParserMixin.jsxParseElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4740:36)
+  тЬШ  2 [chromium] тА║ e2e\user-management-smoke.spec.ts:9:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should create a new user successfully (retry #1) (5.3s)
+[WebServer] 23:29:00 [vite] Internal server error: D:\TelegramOllama_ENV_DEMO\code\api\web\src\pages\ExpensesPage.tsx: Unexpected token (288:83)
+[WebServer] 
+[WebServer]   286 |           data={expenses}
+[WebServer]   287 |           keyExtractor={(expense) => expense.id}
+[WebServer] > 288 |           emptyMessage="No expenses match the current filters"h the current filters"
+[WebServer]       |                                                                                    ^
+[WebServer]   289 |         />
+[WebServer]   290 |       )}
+[WebServer]   291 |
+[WebServer]   Plugin: vite:react-babel
+[WebServer]   File: D:/TelegramOllama_ENV_DEMO/code/api/web/src/pages/ExpensesPage.tsx:288:83
+[WebServer]   297|              onPageChange={setPage}
+[WebServer]   298|              itemsPerPage={limit}
+[WebServer]   299|              totalItems={totalItems}
+[WebServer]      |                                    ^
+[WebServer]   300|            />
+[WebServer]   301|          </div>
+[WebServer]       at constructor (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:367:19)
+[WebServer]       at TypeScriptParserMixin.raise (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6624:19)
+[WebServer]       at TypeScriptParserMixin.unexpected (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6644:16)
+[WebServer]       at TypeScriptParserMixin.jsxParseIdentifier (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4598:12)
+[WebServer]       at TypeScriptParserMixin.jsxParseNamespacedName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4605:23)
+[WebServer]       at TypeScriptParserMixin.jsxParseAttribute (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4681:22)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4696:28)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10100:18)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4691:17)
+[WebServer]       at TypeScriptParserMixin.jsxParseElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4715:33)
+[WebServer]       at TypeScriptParserMixin.jsxParseElement (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4778:17)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4788:19)
+[WebServer]       at TypeScriptParserMixin.parseExprSubscripts (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11145:23)
+[WebServer]       at TypeScriptParserMixin.parseUpdate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11130:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11110:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9890:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10963:61)
+[WebServer]       at TypeScriptParserMixin.parseExprOps (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10968:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10945:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9828:39
+[WebServer]       at TypeScriptParserMixin.tryParse (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6932:20)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9828:18)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10864:39
+[WebServer]       at TypeScriptParserMixin.allowInAnd (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12500:12)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssignAllowIn (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10864:17)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12567:17)
+[WebServer]       at TypeScriptParserMixin.parseParenAndDistinguishExpression (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11747:28)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11395:23)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4793:20)
+[WebServer]       at TypeScriptParserMixin.parseExprSubscripts (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11145:23)
+[WebServer]       at TypeScriptParserMixin.parseUpdate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11130:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11110:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9890:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10963:61)
+[WebServer]       at TypeScriptParserMixin.parseExprOps (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10968:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10945:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9839:20)
+[WebServer]       at TypeScriptParserMixin.parseConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10957:29)
+[WebServer]       at TypeScriptParserMixin.parseConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9664:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10949:17)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9839:20)
+[WebServer]       at TypeScriptParserMixin.parseExpressionBase (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10848:23)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10844:39
+[WebServer]       at TypeScriptParserMixin.allowInAnd (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12500:12)
+[WebServer]       at TypeScriptParserMixin.parseExpression (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10844:17)
+[WebServer]       at TypeScriptParserMixin.jsxParseExpressionContainer (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4661:31)
+[WebServer]       at TypeScriptParserMixin.jsxParseElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4740:36)
+  тЬШ  3 [chromium] тА║ e2e\user-management-smoke.spec.ts:9:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should create a new user successfully (retry #2) (5.2s)
+[WebServer] 23:29:06 [vite] Internal server error: D:\TelegramOllama_ENV_DEMO\code\api\web\src\pages\ExpensesPage.tsx: Unexpected token (288:83)
+[WebServer] 
+[WebServer]   286 |           data={expenses}
+[WebServer]   287 |           keyExtractor={(expense) => expense.id}
+[WebServer] > 288 |           emptyMessage="No expenses match the current filters"h the current filters"
+[WebServer]       |                                                                                    ^
+[WebServer]   289 |         />
+[WebServer]   290 |       )}
+[WebServer]   291 |
+[WebServer]   Plugin: vite:react-babel
+[WebServer]   File: D:/TelegramOllama_ENV_DEMO/code/api/web/src/pages/ExpensesPage.tsx:288:83
+[WebServer]   297|              onPageChange={setPage}
+[WebServer]   298|              itemsPerPage={limit}
+[WebServer]   299|              totalItems={totalItems}
+[WebServer]      |                                    ^
+[WebServer]   300|            />
+[WebServer]   301|          </div>
+[WebServer]       at constructor (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:367:19)
+[WebServer]       at TypeScriptParserMixin.raise (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6624:19)
+[WebServer]       at TypeScriptParserMixin.unexpected (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6644:16)
+[WebServer]       at TypeScriptParserMixin.jsxParseIdentifier (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4598:12)
+[WebServer]       at TypeScriptParserMixin.jsxParseNamespacedName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4605:23)
+[WebServer]       at TypeScriptParserMixin.jsxParseAttribute (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4681:22)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4696:28)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10100:18)
+[WebServer]       at TypeScriptParserMixin.jsxParseOpeningElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4691:17)
+[WebServer]       at TypeScriptParserMixin.jsxParseElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4715:33)
+[WebServer]       at TypeScriptParserMixin.jsxParseElement (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4778:17)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4788:19)
+[WebServer]       at TypeScriptParserMixin.parseExprSubscripts (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11145:23)
+[WebServer]       at TypeScriptParserMixin.parseUpdate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11130:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11110:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9890:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10963:61)
+[WebServer]       at TypeScriptParserMixin.parseExprOps (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10968:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10945:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9828:39
+[WebServer]       at TypeScriptParserMixin.tryParse (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:6932:20)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9828:18)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10864:39
+[WebServer]       at TypeScriptParserMixin.allowInAnd (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12500:12)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssignAllowIn (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10864:17)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12567:17)
+[WebServer]       at TypeScriptParserMixin.parseParenAndDistinguishExpression (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11747:28)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11395:23)
+[WebServer]       at TypeScriptParserMixin.parseExprAtom (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4793:20)
+[WebServer]       at TypeScriptParserMixin.parseExprSubscripts (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11145:23)
+[WebServer]       at TypeScriptParserMixin.parseUpdate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11130:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:11110:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnary (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9890:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10963:61)
+[WebServer]       at TypeScriptParserMixin.parseExprOps (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10968:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10945:23)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9839:20)
+[WebServer]       at TypeScriptParserMixin.parseConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10957:29)
+[WebServer]       at TypeScriptParserMixin.parseConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9664:18)
+[WebServer]       at TypeScriptParserMixin.parseMaybeConditional (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10949:17)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10895:21)
+[WebServer]       at TypeScriptParserMixin.parseMaybeAssign (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:9839:20)
+[WebServer]       at TypeScriptParserMixin.parseExpressionBase (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10848:23)
+[WebServer]       at D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10844:39
+[WebServer]       at TypeScriptParserMixin.allowInAnd (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:12500:12)
+[WebServer]       at TypeScriptParserMixin.parseExpression (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:10844:17)
+[WebServer]       at TypeScriptParserMixin.jsxParseExpressionContainer (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4661:31)
+[WebServer]       at TypeScriptParserMixin.jsxParseElementAt (D:\TelegramOllama_ENV_DEMO\code\api\web\node_modules\@babel\parser\lib\index.js:4740:36)

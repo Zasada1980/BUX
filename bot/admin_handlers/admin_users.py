@@ -17,7 +17,7 @@ from datetime import datetime
 import base64
 import logging
 
-from bot.config import get_db
+from bot.config import get_db, is_admin
 from api import crud_users
 
 logger = logging.getLogger(__name__)
@@ -52,20 +52,19 @@ def _unb64(data: str) -> dict:
 
 
 def admin_only(func):
-    """Decorator to restrict commands to admins only"""
+    """Decorator to restrict commands to admins only (uses is_admin with BOT_ADMINS fallback)"""
     from functools import wraps
     
     @wraps(func)
     async def wrapper(event, *args, **kwargs):
         user_id = event.from_user.id if hasattr(event, 'from_user') else event.message.from_user.id
         
-        # Check DB-based admin role
-        db = next(get_db())
-        user = crud_users.get_user_by_telegram_id(db, user_id)
-        if not user or user.role != "admin":
-            await (event.answer if isinstance(event, CallbackQuery) else event.reply)(
-                "❌ Доступ запрещён. Требуется роль: admin"
-            )
+        if not is_admin(user_id):
+            msg = "❌ Доступ запрещён. Требуется роль: admin"
+            if isinstance(event, CallbackQuery):
+                await event.answer(msg, show_alert=True)
+            else:
+                await event.reply(msg)
             return
         
         # Filter out framework-injected kwargs
@@ -83,23 +82,23 @@ async def admin_panel(message: Message):
     """Admin panel — main menu with inline buttons"""
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="👥 Пользователи", callback_data="adm:users:0"),
-            InlineKeyboardButton(text="📊 Статистика", callback_data="adm:stats")
+            InlineKeyboardButton(text="👥 Пользователи", callback_data="admin:users:0"),
+            InlineKeyboardButton(text="📊 Статистика", callback_data="admin:stats")
         ],
         [
-            InlineKeyboardButton(text="👔 Заказчики", callback_data="adm:clients"),
-            InlineKeyboardButton(text="📅 Расписание", callback_data="adm:schedule:view")
+            InlineKeyboardButton(text="👔 Заказчики", callback_data="admin:clients"),
+            InlineKeyboardButton(text="📅 Расписание", callback_data="admin:schedule:view")
         ],
         [
-            InlineKeyboardButton(text="➕ Добавить пользователя", callback_data="adm:add:start")
+            InlineKeyboardButton(text="➕ Добавить пользователя", callback_data="admin:add:start")
         ],
         [
-            InlineKeyboardButton(text="👷 Только рабочие", callback_data="adm:filter:worker"),
-            InlineKeyboardButton(text="👨‍💼 Только бригадиры", callback_data="adm:filter:foreman")
+            InlineKeyboardButton(text="👷 Только рабочие", callback_data="admin:filter:worker"),
+            InlineKeyboardButton(text="👨‍💼 Только бригадиры", callback_data="admin:filter:foreman")
         ],
         [
-            InlineKeyboardButton(text="🔧 Только админы", callback_data="adm:filter:admin"),
-            InlineKeyboardButton(text="❌ Неактивные", callback_data="adm:filter:inactive")
+            InlineKeyboardButton(text="🔧 Только админы", callback_data="admin:filter:admin"),
+            InlineKeyboardButton(text="❌ Неактивные", callback_data="admin:filter:inactive")
         ]
     ])
     
@@ -117,29 +116,29 @@ async def admin_panel(message: Message):
     )
 
 
-@router.callback_query(F.data == "adm:panel")
+@router.callback_query(F.data == "admin:panel")
 @admin_only
 async def back_to_panel(callback: CallbackQuery):
     """Return to main admin panel"""
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="👥 Пользователи", callback_data="adm:users:0"),
-            InlineKeyboardButton(text="📊 Статистика", callback_data="adm:stats")
+            InlineKeyboardButton(text="👥 Пользователи", callback_data="admin:users:0"),
+            InlineKeyboardButton(text="📊 Статистика", callback_data="admin:stats")
         ],
         [
-            InlineKeyboardButton(text="👔 Заказчики", callback_data="adm:clients"),
-            InlineKeyboardButton(text="📅 Расписание", callback_data="adm:schedule:view")
+            InlineKeyboardButton(text="👔 Заказчики", callback_data="admin:clients"),
+            InlineKeyboardButton(text="📅 Расписание", callback_data="admin:schedule:view")
         ],
         [
-            InlineKeyboardButton(text="➕ Добавить пользователя", callback_data="adm:add:start")
+            InlineKeyboardButton(text="➕ Добавить пользователя", callback_data="admin:add:start")
         ],
         [
-            InlineKeyboardButton(text="👷 Только рабочие", callback_data="adm:filter:worker"),
-            InlineKeyboardButton(text="👨‍💼 Только бригадиры", callback_data="adm:filter:foreman")
+            InlineKeyboardButton(text="👷 Только рабочие", callback_data="admin:filter:worker"),
+            InlineKeyboardButton(text="👨‍💼 Только бригадиры", callback_data="admin:filter:foreman")
         ],
         [
-            InlineKeyboardButton(text="🔧 Только админы", callback_data="adm:filter:admin"),
-            InlineKeyboardButton(text="❌ Неактивные", callback_data="adm:filter:inactive")
+            InlineKeyboardButton(text="🔧 Только админы", callback_data="admin:filter:admin"),
+            InlineKeyboardButton(text="❌ Неактивные", callback_data="admin:filter:inactive")
         ]
     ])
     
@@ -166,7 +165,7 @@ async def back_to_admin_alias(callback: CallbackQuery):
     await back_to_panel(callback)
 
 
-@router.callback_query(F.data == "adm:stats")
+@router.callback_query(F.data == "admin:stats")
 @admin_only
 async def show_stats(callback: CallbackQuery):
     """Show user statistics with back button"""
@@ -193,15 +192,15 @@ async def show_stats(callback: CallbackQuery):
     )
     
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="👥 Показать всех", callback_data="adm:users:0")],
-        [InlineKeyboardButton(text="◀️ Главное меню", callback_data="adm:panel")]
+        [InlineKeyboardButton(text="👥 Показать всех", callback_data="admin:users:0")],
+        [InlineKeyboardButton(text="◀️ Главное меню", callback_data="admin:panel")]
     ])
     
     await callback.message.edit_text(text, reply_markup=kb, parse_mode="Markdown")
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("adm:users:"))
+@router.callback_query(F.data.startswith("admin:users:"))
 @admin_only
 async def list_users(callback: CallbackQuery):
     """List all users with pagination (10 per page)"""
@@ -243,13 +242,13 @@ async def list_users(callback: CallbackQuery):
         # Pagination controls
         nav_row = []
         if page > 0:
-            nav_row.append(InlineKeyboardButton(text="◀️ Пред", callback_data=f"adm:users:{page-1}"))
-        nav_row.append(InlineKeyboardButton(text=f"{page+1}/{total_pages}", callback_data="adm:noop"))
+            nav_row.append(InlineKeyboardButton(text="◀️ Пред", callback_data=f"admin:users:{page-1}"))
+        nav_row.append(InlineKeyboardButton(text=f"{page+1}/{total_pages}", callback_data="admin:noop"))
         if page < total_pages - 1:
-            nav_row.append(InlineKeyboardButton(text="След ▶️", callback_data=f"adm:users:{page+1}"))
+            nav_row.append(InlineKeyboardButton(text="След ▶️", callback_data=f"admin:users:{page+1}"))
         
         kb_rows.append(nav_row)
-        kb_rows.append([InlineKeyboardButton(text="◀️ Главное меню", callback_data="adm:panel")])
+        kb_rows.append([InlineKeyboardButton(text="◀️ Главное меню", callback_data="admin:panel")])
         
         kb = InlineKeyboardMarkup(inline_keyboard=kb_rows)
         
@@ -265,56 +264,6 @@ async def list_users(callback: CallbackQuery):
         db.close()
 
 
-@router.callback_query(F.data.startswith("adm:filter:"))
-@admin_only
-async def filter_users(callback: CallbackQuery):
-    """Filter users by role or status"""
-    filter_type = callback.data.split(":")[-1]
-    db = next(get_db())
-    
-    if filter_type == "inactive":
-        users = crud_users.list_users(db, role_filter=None, active_only=False)
-        users = [u for u in users if not u.active]
-        title = "❌ Неактивные пользователи"
-    else:
-        users = crud_users.list_users(db, role_filter=filter_type, active_only=True)
-        role_names = {"worker": "👷 Рабочие", "foreman": "👨‍💼 Бригадиры", "admin": "🔧 Админы"}
-        title = role_names.get(filter_type, "Пользователи")
-    
-    if not users:
-        await callback.answer(f"Нет пользователей в категории: {title}")
-        return
-    
-    # Build user list
-    kb_rows = []
-    for user in users[:10]:  # First 10
-        role_emoji = {"worker": "👷", "foreman": "👨‍💼", "admin": "🔧"}.get(user.role, "❓")
-        status_emoji = "✅" if user.active else "❌"
-        username = f"@{user.telegram_username}" if user.telegram_username else f"ID:{user.telegram_id}"
-        
-        kb_rows.append([
-            InlineKeyboardButton(
-                text=f"{role_emoji} {status_emoji} {username}",
-                callback_data=f"adm:user:{user.id}"
-            )
-        ])
-    
-    kb_rows.append([InlineKeyboardButton(text="◀️ Главное меню", callback_data="adm:panel")])
-    kb = InlineKeyboardMarkup(inline_keyboard=kb_rows)
-    
-    await callback.message.edit_text(
-        f"{title}\n"
-        f"Найдено: {len(users)}\n\n"
-        f"Нажмите на пользователя для редактирования",
-        reply_markup=kb,
-        parse_mode="Markdown"
-    )
-    await callback.answer()
-    
-    if not users:
-        await callback.answer("Нет зарегистрированных пользователей", show_alert=True)
-        return
-    
     text = "👥 **Пользователи (активные):**\n\n"
     kb_rows = []
     
@@ -346,7 +295,7 @@ async def filter_users(callback: CallbackQuery):
             )
         ])
     
-    kb_rows.append([InlineKeyboardButton(text="◀️ Назад", callback_data="adm:panel")])
+    kb_rows.append([InlineKeyboardButton(text="◀️ Назад", callback_data="admin:panel")])
     kb = InlineKeyboardMarkup(inline_keyboard=kb_rows)
     
     await callback.message.edit_text(text, reply_markup=kb, parse_mode="Markdown")
@@ -404,13 +353,13 @@ async def view_user(callback: CallbackQuery):
         
         # Add salary and data edit buttons only for workers/foremen
         if user.role in ("worker", "foreman"):
-            kb_rows.append([InlineKeyboardButton(text="💰 Изменить зарплату", callback_data=f"adm:salary:{user.id}")])
-            kb_rows.append([InlineKeyboardButton(text="✏️ Изменить данные", callback_data=f"adm:editdata:{user.id}")])
+            kb_rows.append([InlineKeyboardButton(text="💰 Изменить зарплату", callback_data=f"admin:salary:{user.id}")])
+            kb_rows.append([InlineKeyboardButton(text="✏️ Изменить данные", callback_data=f"admin:editdata:{user.id}")])
         
         kb_rows.extend([
             [InlineKeyboardButton(text="📋 История изменений", callback_data=f"admin:user:history:{user.id}")],
             [InlineKeyboardButton(text="🗑️ Удалить пользователя", callback_data=f"admin:user:delete:confirm:{user.id}")],
-            [InlineKeyboardButton(text="◀️ К списку", callback_data="adm:users:0")]
+            [InlineKeyboardButton(text="◀️ К списку", callback_data="admin:users:0")]
         ])
         kb = InlineKeyboardMarkup(inline_keyboard=kb_rows)
         
@@ -531,6 +480,8 @@ async def toggle_user_status(callback: CallbackQuery):
 @admin_only
 async def confirm_delete_user(callback: CallbackQuery):
     """Confirm user deletion"""
+    await callback.answer()  # Немедленный ответ
+    
     user_id = int(callback.data.split(":")[-1])
     
     db = next(get_db())
@@ -538,12 +489,12 @@ async def confirm_delete_user(callback: CallbackQuery):
         user = crud_users.get_user_by_id(db, user_id)
         
         if not user:
-            await callback.answer("❌ Пользователь не найден", show_alert=True)
+            await callback.message.answer("❌ Пользователь не найден")
             return
         
         # Prevent self-deletion
         if user.telegram_id and user.telegram_id == callback.from_user.id:
-            await callback.answer("❌ Нельзя удалить самого себя", show_alert=True)
+            await callback.message.answer("❌ Нельзя удалить самого себя")
             return
     
         display_name = user.name or user.telegram_username or f"ID {user_id}"
@@ -567,7 +518,9 @@ async def confirm_delete_user(callback: CallbackQuery):
         ])
         
         await callback.message.edit_text(text, reply_markup=kb, parse_mode="Markdown")
-        await callback.answer()
+    except Exception as e:
+        logger.error(f"Error in confirm_delete_user for user {user_id}: {e}", exc_info=True)
+        await callback.message.answer(f"❌ Ошибка: {e}")
     finally:
         db.close()
 
@@ -576,6 +529,8 @@ async def confirm_delete_user(callback: CallbackQuery):
 @admin_only
 async def execute_delete_user(callback: CallbackQuery):
     """Execute user deletion"""
+    await callback.answer()  # Немедленный ответ
+    
     user_id = int(callback.data.split(":")[-1])
     
     db = next(get_db())
@@ -593,13 +548,16 @@ async def execute_delete_user(callback: CallbackQuery):
             )
             
             kb = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="◀️ К списку пользователей", callback_data="adm:users:0")],
-                [InlineKeyboardButton(text="🏠 Главное меню", callback_data="adm:panel")]
+                [InlineKeyboardButton(text="◀️ К списку пользователей", callback_data="admin:users:page:0")],
+                [InlineKeyboardButton(text="🚀 На мостик", callback_data="admin:main")]
             ])
             
             await callback.message.edit_text(text, reply_markup=kb, parse_mode="Markdown")
         else:
-            await callback.answer("❌ Ошибка удаления: пользователь не найден", show_alert=True)
+            await callback.message.answer("❌ Ошибка удаления: пользователь не найден")
+    except Exception as e:
+        logger.error(f"Error deleting user {user_id}: {e}", exc_info=True)
+        await callback.message.answer(f"❌ Ошибка удаления: {e}")
     finally:
         db.close()
 
@@ -670,7 +628,7 @@ async def generate_invite_link(callback: CallbackQuery):
         
         kb = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="◀️ Назад к карточке", callback_data=f"admin:user:view:{user_id}")],
-            [InlineKeyboardButton(text="◀️ К списку", callback_data="adm:users:0")]
+            [InlineKeyboardButton(text="◀️ К списку", callback_data="admin:users:0")]
         ])
         
         await callback.message.edit_text(instruction_text, reply_markup=kb, parse_mode="HTML")
@@ -783,7 +741,7 @@ async def cancel_link_telegram(callback: CallbackQuery, state: FSMContext):
         
         kb_rows.append([InlineKeyboardButton(text="📜 История изменений", callback_data=f"admin:user:history:{user.id}")])
         kb_rows.append([InlineKeyboardButton(text="🗑️ Удалить пользователя", callback_data=f"admin:user:delete:{user.id}")])
-        kb_rows.append([InlineKeyboardButton(text="◀️ К списку", callback_data="adm:users:0")])
+        kb_rows.append([InlineKeyboardButton(text="◀️ К списку", callback_data="admin:users:0")])
         
         kb = InlineKeyboardMarkup(inline_keyboard=kb_rows)
         
@@ -953,7 +911,7 @@ async def receive_telegram_username(message: Message, state: FSMContext):
             
             kb = InlineKeyboardMarkup(inline_keyboard=[
                 [InlineKeyboardButton(text="📋 Показать карточку", callback_data=f"admin:user:view:{user_id}")],
-                [InlineKeyboardButton(text="◀️ К списку", callback_data="adm:users:0")]
+                [InlineKeyboardButton(text="◀️ К списку", callback_data="admin:users:0")]
             ])
             
             await message.answer(text, reply_markup=kb, parse_mode="Markdown")
@@ -970,11 +928,11 @@ async def back_to_panel(callback: CallbackQuery):
     """Return to admin panel"""
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="👥 Пользователи", callback_data="adm:users:0"),
-            InlineKeyboardButton(text="📊 Статистика", callback_data="adm:stats")
+            InlineKeyboardButton(text="👥 Пользователи", callback_data="admin:users:0"),
+            InlineKeyboardButton(text="📊 Статистика", callback_data="admin:stats")
         ],
         [
-            InlineKeyboardButton(text="➕ Добавить пользователя", callback_data="adm:add:start")
+            InlineKeyboardButton(text="➕ Добавить пользователя", callback_data="admin:add:start")
         ]
     ])
     

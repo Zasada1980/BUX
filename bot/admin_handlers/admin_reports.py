@@ -31,12 +31,12 @@ def get_last_6_months():
     return months
 
 
-@router.callback_query(F.data == "adm:reports")
+@router.callback_query(F.data == "admin:reports")
 async def show_reports_menu(callback_query: CallbackQuery):
     """Показать меню отчётов."""
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📄 Месячный отчёт", callback_data="rep:monthly")],
-        [InlineKeyboardButton(text="🔙 Назад", callback_data="adm:panel")]
+        [InlineKeyboardButton(text="📄 Месячный отчёт", callback_data="admin:reports:monthly")],
+        [InlineKeyboardButton(text="🔙 Назад", callback_data="admin:panel")]
     ])
     
     await callback_query.message.edit_text(
@@ -47,7 +47,7 @@ async def show_reports_menu(callback_query: CallbackQuery):
     )
 
 
-@router.callback_query(F.data == "rep:monthly")
+@router.callback_query(F.data == "admin:reports:monthly")
 async def select_month_for_report(callback_query: CallbackQuery):
     """Выбор месяца для отчёта."""
     months = get_last_6_months()
@@ -68,12 +68,12 @@ async def select_month_for_report(callback_query: CallbackQuery):
         keyboard_rows.append([
             InlineKeyboardButton(
                 text=label,
-                callback_data=f"rep:download:{month}"
+                callback_data=f"admin:reports:download:{month}"
             )
         ])
     
     keyboard_rows.append([
-        InlineKeyboardButton(text="🔙 Назад", callback_data="adm:reports")
+        InlineKeyboardButton(text="🔙 Назад", callback_data="admin:reports")
     ])
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_rows)
@@ -86,7 +86,7 @@ async def select_month_for_report(callback_query: CallbackQuery):
     )
 
 
-@router.callback_query(F.data.startswith("rep:download:"))
+@router.callback_query(F.data.startswith("admin:reports:download:"))
 async def download_monthly_report(callback_query: CallbackQuery):
     """Скачать месячный отчёт в CSV."""
     month = callback_query.data.split(":")[-1]  # Извлекаем YYYY-MM

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { BadgeStyled as Badge } from '@/components/ui/BadgeStyled';
-// F5: Bot Menu removed (will be separate page), all Bot Menu imports removed
+import AccessTokensTab from '@/components/settings/AccessTokensTab';
 
 interface GeneralSettings {
   company_name: string;
@@ -194,9 +194,14 @@ export default function SettingsPage() {
       <Tabs defaultValue="general" className="w-full">
         <TabsList>
           <TabsTrigger value="general">Общие</TabsTrigger>
+          <TabsTrigger value="tokens">Токены доступа</TabsTrigger>
           <TabsTrigger value="backup">Backup</TabsTrigger>
           <TabsTrigger value="system">Система</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="tokens">
+          <AccessTokensTab />
+        </TabsContent>
 
         <TabsContent value="general">
           <Card>

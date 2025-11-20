@@ -26,9 +26,9 @@ export default function TasksPage() {
 
   // Fetch tasks with useApi hook
   const { loading, execute: fetchTasks } = useApi(
-    async () => {
-      const filters: Record<string, any> = {};
-      if (statusFilter !== 'all') filters.status = statusFilter;
+    async (page: number, limit: number, status: string, dateFrom: string, dateTo: string) => {
+      const filters: Record<string, any> = { page, limit };
+      if (status !== 'all') filters.status = status;
       if (dateFrom) filters.date_from = dateFrom;
       if (dateTo) filters.date_to = dateTo;
       
@@ -42,8 +42,9 @@ export default function TasksPage() {
   );
 
   useEffect(() => {
-    fetchTasks();
-  }, [statusFilter, dateFrom, dateTo, fetchTasks]);
+    fetchTasks(page, limit, statusFilter, dateFrom, dateTo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, limit, statusFilter, dateFrom, dateTo]);
 
   const handleExportCSV = () => {
     try {

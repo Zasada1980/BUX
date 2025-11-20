@@ -1,6 +1,6 @@
 """API endpoints for user management (admin only)"""
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from db import SessionLocal  # FIX: No api.database in API container
@@ -40,24 +40,44 @@ def list_users(
     page: int = 1,
     limit: int = 20,
     active_only: bool = True,
+    role: str | None = Query(None),
+    status: str | None = Query(None),
     db: Session = Depends(get_db),
     admin: dict = Depends(get_current_admin)
 ):
-    """List all users with pagination (admin only)"""
+    """List all users with pagination and filters (admin only)
+    
+    Args:
+        page: Page number (1-based)
+        limit: Items per page
+        active_only: DEPRECATED - use status filter instead
+        role: Filter by role (worker, foreman, admin)
+        status: Filter by status (active, inactive, all)
+    """
     skip = (page - 1) * limit
     
-    # Get users
-    if active_only:
-        users = crud_users.get_active_users(db, skip=skip, limit=limit)
-    else:
-        users = crud_users.get_active_users(db, skip=skip, limit=limit)
-    
-    # Get total count
     from models_users import User
-    total_query = db.query(User)
-    if active_only:
-        total_query = total_query.filter(User.active == True)
-    total = total_query.count()
+    
+    # Build query with filters
+    query = db.query(User)
+    
+    # Status filter (new preferred way)
+    if status == 'active':
+        query = query.filter(User.active == True)
+    elif status == 'inactive':
+        query = query.filter(User.active == False)
+    elif active_only and status is None:  # Legacy fallback
+        query = query.filter(User.active == True)
+    
+    # Role filter
+    if role and role != 'all':
+        query = query.filter(User.role == role)
+    
+    # Get total count with filters
+    total = query.count()
+    
+    # Get paginated results
+    users = query.offset(skip).limit(limit).all()
     
     # Calculate pages
     pages = (total + limit - 1) // limit if total > 0 else 1
@@ -102,16 +122,38 @@ def create_user(
     admin: dict = Depends(get_current_admin)
 ):
     """Create new user (admin only)"""
-    # Check if user exists
-    existing = crud_users.get_user_by_telegram_id(db, user.telegram_id)
-    if existing:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"User with telegram_id {user.telegram_id} already exists"
-        )
+    from models_users import User
     
-    # Set created_by from admin
-    user.created_by = admin.telegram_id
+    # Check uniqueness: telegram_id, telegram_username, phone (any can be None)
+    # F14-3: Updated to check all contact methods (not just telegram_id)
+    if user.telegram_id:
+        existing = crud_users.get_user_by_telegram_id(db, user.telegram_id)
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"User with telegram_id {user.telegram_id} already exists"
+            )
+    
+    if user.telegram_username:
+        existing_username = db.query(User).filter(User.telegram_username == user.telegram_username).first()
+        if existing_username:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"User with telegram_username {user.telegram_username} already exists"
+            )
+    
+    if user.phone:
+        existing_phone = db.query(User).filter(User.phone == user.phone).first()
+        if existing_phone:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"User with phone {user.phone} already exists"
+            )
+    
+    # Set created_by from admin (if field exists)
+    if hasattr(user, 'created_by'):
+        user.created_by = admin.get('telegram_id') or admin.get('user_id')
+    
     return crud_users.create_user(db, user)
 
 

@@ -243,7 +243,7 @@ class ApiClient {
 
   // Dashboard
   async getDashboardKPIs(): Promise<DashboardKPIs> {
-    return this.request<DashboardKPIs>(API_ENDPOINTS.DASHBOARD.KPIS);
+    return this.request<DashboardKPIs>(API_ENDPOINTS.DASHBOARD.SUMMARY);
   }
 
   // Bot Menu Management (Admin only)

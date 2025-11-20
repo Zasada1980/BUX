@@ -1,5 +1,6 @@
 """Authentication endpoints for web interface."""
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
+from pydantic import Field
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 from models import Employee, AuthCredential, RefreshToken
@@ -9,7 +10,10 @@ from schemas_auth import (
     TokenResponse,
     TokenRefreshIn,
     CurrentUserOut,
-    EmployeeOut
+    EmployeeOut,
+    CreateUserRequest,
+    UserCredentialOut,
+    RevokeTokensRequest
 )
 from auth import (
     get_db,
@@ -284,3 +288,225 @@ async def logout(
         db.commit()
     
     return {"status": "ok", "message": "Logged out successfully"}
+
+
+@router.post("/users", response_model=UserCredentialOut, status_code=201)
+async def create_user(
+    request: CreateUserRequest,
+    current_user: Employee = Depends(get_current_employee),
+    db: Session = Depends(get_db)
+):
+    """
+    Create new user with password credentials (admin only).
+    """
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only admins can create users"
+        )
+    
+    # Check if username already exists
+    existing = db.query(AuthCredential).filter(
+        AuthCredential.username == request.username
+    ).first()
+    
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Username '{request.username}' already exists"
+        )
+    
+    # Check if telegram_id exists
+    if request.telegram_id:
+        existing_tg = db.query(Employee).filter(
+            Employee.telegram_id == request.telegram_id
+        ).first()
+        
+        if existing_tg:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Telegram ID {request.telegram_id} already registered"
+            )
+    
+    # Create employee
+    employee = Employee(
+        telegram_id=request.telegram_id,
+        telegram_username=request.telegram_username,
+        phone=request.phone,
+        name=request.name,
+        role=request.role,
+        active=True
+    )
+    db.add(employee)
+    db.flush()  # Get employee.id
+    
+    # Create auth credentials
+    password_hash = hash_password(request.password)
+    auth_cred = AuthCredential(
+        employee_id=employee.id,
+        username=request.username,
+        password_hash=password_hash,
+        failed_attempts=0
+    )
+    db.add(auth_cred)
+    db.commit()
+    db.refresh(auth_cred)
+    
+    return UserCredentialOut(
+        id=auth_cred.id,
+        employee_id=employee.id,
+        username=auth_cred.username,
+        name=employee.name,
+        role=employee.role,
+        active=employee.active,
+        failed_attempts=auth_cred.failed_attempts,
+        locked_until=auth_cred.locked_until,
+        created_at=auth_cred.created_at
+    )
+
+
+@router.get("/users", response_model=list[UserCredentialOut])
+async def list_users(
+    current_user: Employee = Depends(get_current_employee),
+    db: Session = Depends(get_db)
+):
+    """
+    List all users with credentials (admin only).
+    """
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only admins can view users"
+        )
+    
+    # Join AuthCredential with Employee
+    results = db.query(AuthCredential, Employee).join(
+        Employee, AuthCredential.employee_id == Employee.id
+    ).all()
+    
+    return [
+        UserCredentialOut(
+            id=cred.id,
+            employee_id=cred.employee_id,
+            username=cred.username,
+            name=emp.name,
+            role=emp.role,
+            active=emp.active,
+            failed_attempts=cred.failed_attempts,
+            locked_until=cred.locked_until,
+            created_at=cred.created_at
+        )
+        for cred, emp in results
+    ]
+
+
+@router.delete("/users/{employee_id}")
+async def delete_user(
+    employee_id: int,
+    current_user: Employee = Depends(get_current_employee),
+    db: Session = Depends(get_db)
+):
+    """
+    Delete user and revoke all tokens (admin only).
+    """
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only admins can delete users"
+        )
+    
+    if employee_id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete yourself"
+        )
+    
+    # Delete auth credentials
+    db.query(AuthCredential).filter(
+        AuthCredential.employee_id == employee_id
+    ).delete()
+    
+    # Revoke all refresh tokens
+    db.query(RefreshToken).filter(
+        RefreshToken.employee_id == employee_id
+    ).update({"revoked": True})
+    
+    # Delete employee
+    deleted = db.query(Employee).filter(Employee.id == employee_id).delete()
+    
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    db.commit()
+    
+    return {"status": "ok", "message": f"User {employee_id} deleted"}
+
+
+@router.post("/users/{employee_id}/revoke-tokens")
+async def revoke_user_tokens(
+    employee_id: int,
+    current_user: Employee = Depends(get_current_employee),
+    db: Session = Depends(get_db)
+):
+    """
+    Revoke all refresh tokens for a user (admin only or self).
+    """
+    if current_user.role != "admin" and current_user.id != employee_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only admins can revoke other users' tokens"
+        )
+    
+    # Revoke all refresh tokens
+    count = db.query(RefreshToken).filter(
+        RefreshToken.employee_id == employee_id,
+        RefreshToken.revoked == False
+    ).update({"revoked": True})
+    
+    db.commit()
+    
+    return {"status": "ok", "message": f"Revoked {count} tokens"}
+
+
+@router.post("/users/{employee_id}/reset-password")
+async def reset_user_password(
+    employee_id: int,
+    new_password: str = Body(..., embed=True, min_length=8),
+    current_user: Employee = Depends(get_current_employee),
+    db: Session = Depends(get_db)
+):
+    """
+    Reset user password and revoke all tokens (admin only or self).
+    """
+    if current_user.role != "admin" and current_user.id != employee_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only admins can reset other users' passwords"
+        )
+    
+    # Update password
+    auth_cred = db.query(AuthCredential).filter(
+        AuthCredential.employee_id == employee_id
+    ).first()
+    
+    if not auth_cred:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User credentials not found"
+        )
+    
+    auth_cred.password_hash = hash_password(new_password)
+    auth_cred.failed_attempts = 0
+    auth_cred.locked_until = None
+    
+    # Revoke all tokens
+    db.query(RefreshToken).filter(
+        RefreshToken.employee_id == employee_id
+    ).update({"revoked": True})
+    
+    db.commit()
+    
+    return {"status": "ok", "message": "Password reset successfully"}

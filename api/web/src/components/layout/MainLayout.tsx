@@ -25,6 +25,7 @@ const NAV_ITEMS: NavItem[] = [
   { path: ROUTES.INVOICES, label: 'Invoices', icon: '📄', allowedRoles: ['admin', 'foreman'] },
   { path: ROUTES.SHIFTS, label: 'Shifts', icon: '⏱️', allowedRoles: ['admin', 'foreman'] },
   { path: ROUTES.INBOX, label: 'Inbox', icon: '📮', allowedRoles: ['admin', 'foreman'] },
+  { path: ROUTES.CHAT, label: 'AI Chat', icon: '✨', allowedRoles: ['admin', 'foreman'] },
   { path: ROUTES.SETTINGS, label: 'Settings', icon: '⚙️', allowedRoles: ['admin'] },
   { path: ROUTES.BOT_MENU, label: 'Bot Menu', icon: '🤖', allowedRoles: ['admin'] },
 ];

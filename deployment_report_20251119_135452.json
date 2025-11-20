@@ -1,0 +1,453 @@
+{
+  "timestamp": "2025-11-19T13:54:52.8345214+02:00",
+  "phases": [
+    {
+      "timestamp": "2025-11-19T13:55:31.3187394+02:00",
+      "status": "SUCCESS",
+      "details": {
+        "built_images": [
+          "code-api:latest",
+          "code-agent:latest",
+          "code-bot:latest"
+        ],
+        "tagged_images": [
+          "bux-api:local",
+          "bux-bot:local",
+          "bux-agent:local"
+        ],
+        "duration_seconds": 38.2357792
+      },
+      "name": "PHASE 1: Build"
+    },
+    {
+      "timestamp": "2025-11-19T13:56:10.8671822+02:00",
+      "status": "SUCCESS",
+      "details": {
+        "containers": [
+          {
+            "state": "running",
+            "ports": [
+              {
+                "URL": "127.0.0.1",
+                "TargetPort": 8080,
+                "PublishedPort": 8081,
+                "Protocol": "tcp"
+              }
+            ],
+            "service": "agent"
+          },
+          {
+            "state": "running",
+            "ports": [
+              {
+                "URL": "127.0.0.1",
+                "TargetPort": 8080,
+                "PublishedPort": 8088,
+                "Protocol": "tcp"
+              }
+            ],
+            "service": "api"
+          },
+          {
+            "state": "running",
+            "ports": [],
+            "service": "bot"
+          },
+          {
+            "state": "running",
+            "ports": [
+              {
+                "URL": "127.0.0.1",
+                "TargetPort": 11434,
+                "PublishedPort": 11434,
+                "Protocol": "tcp"
+              }
+            ],
+            "service": "ollama"
+          }
+        ],
+        "duration_seconds": 39.5194728,
+        "health_check": {
+          "endpoint": "/health",
+          "response": {
+            "service": "api",
+            "status": "ok",
+            "ok": true,
+            "uptime_s": 31.063,
+            "version": "0.2.0",
+            "ts": "2025-11-19T13:56:08.20897+02:00",
+            "python": "3.12.12",
+            "env": {
+              "DB_PATH": ":memory:",
+              "AGENT_URL": "http://agent:8080"
+            }
+          },
+          "status": "PASS"
+        },
+        "database_check": {
+          "test": "employee_count",
+          "error": [
+            {
+              "Exception": {
+                "SerializedRemoteException": null,
+                "SerializedRemoteInvocationInfo": null,
+                "ErrorRecord": {
+                  "Exception": {
+                    "Message": "Traceback (most recent call last):",
+                    "TargetSite": null,
+                    "Data": {},
+                    "InnerException": null,
+                    "HelpLink": null,
+                    "Source": null,
+                    "HResult": -2146233087,
+                    "StackTrace": null
+                  },
+                  "TargetObject": null,
+                  "CategoryInfo": {
+                    "Category": 0,
+                    "Activity": "",
+                    "Reason": "ParentContainsErrorRecordException",
+                    "TargetName": "",
+                    "TargetType": ""
+                  },
+                  "FullyQualifiedErrorId": "RuntimeException",
+                  "ErrorDetails": null,
+                  "InvocationInfo": null,
+                  "ScriptStackTrace": null,
+                  "PipelineIterationInfo": []
+                },
+                "WasThrownFromThrowStatement": false,
+                "TargetSite": null,
+                "Message": "Traceback (most recent call last):",
+                "Data": {},
+                "InnerException": null,
+                "HelpLink": null,
+                "Source": null,
+                "HResult": -2146233087,
+                "StackTrace": null
+              },
+              "TargetObject": "Traceback (most recent call last):",
+              "CategoryInfo": {
+                "Category": 0,
+                "Activity": "",
+                "Reason": "RemoteException",
+                "TargetName": "Traceback (most recent call last):",
+                "TargetType": "String"
+              },
+              "FullyQualifiedErrorId": "NativeCommandError",
+              "ErrorDetails": null,
+              "InvocationInfo": {
+                "MyCommand": {
+                  "Path": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+                  "Extension": ".exe",
+                  "Definition": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+                  "Source": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+                  "Version": {
+                    "Major": 0,
+                    "Minor": 0,
+                    "Build": 0,
+                    "Revision": 0,
+                    "MajorRevision": 0,
+                    "MinorRevision": 0
+                  },
+                  "Visibility": 0,
+                  "OutputType": [
+                    {
+                      "Name": "System.String",
+                      "Type": "string",
+                      "TypeDefinitionAst": null
+                    }
+                  ],
+                  "Name": "docker.exe",
+                  "CommandType": 32,
+                  "ModuleName": "",
+                  "Module": null,
+                  "RemotingCapability": 1,
+                  "Parameters": null,
+                  "ParameterSets": null
+                },
+                "BoundParameters": {},
+                "UnboundArguments": [],
+                "ScriptLineNumber": 375,
+                "OffsetInLine": 20,
+                "HistoryId": -1,
+                "ScriptName": "D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1",
+                "Line": "        $dbCheck = docker compose -f $COMPOSE_FILE exec -T api python -c \"from api.db import get_session; from api.models_users import Employee; session = next(get_session()); print(session.query(Employee).count())\" 2>&1\r\n",
+                "Statement": "docker compose -f $COMPOSE_FILE exec -T api python -c \"from api.db import get_session; from api.models_users import Employee; session = next(get_session()); print(session.query(Employee).count())\" 2>&1",
+                "PositionMessage": "At D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1:375 char:20\r\n+ …  $dbCheck = docker compose -f $COMPOSE_FILE exec -T api python -c \"fr …\r\n+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+                "PSScriptRoot": "D:\\TelegramOllama_ENV_DEMO\\code\\scripts",
+                "PSCommandPath": "D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1",
+                "InvocationName": "docker",
+                "PipelineLength": 0,
+                "PipelinePosition": 0,
+                "ExpectingInput": false,
+                "CommandOrigin": 1,
+                "DisplayScriptPosition": null
+              },
+              "ScriptStackTrace": "at Invoke-Phase2-SmokeTest, D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1: line 375\r\nat Main, D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1: line 562\r\nat <ScriptBlock>, D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1: line 608\r\nat <ScriptBlock>, <No file>: line 1",
+              "PipelineIterationInfo": [
+                0,
+                0
+              ],
+              "PSMessageDetails": null
+            },
+            {
+              "Exception": {
+                "SerializedRemoteException": null,
+                "SerializedRemoteInvocationInfo": null,
+                "ErrorRecord": {
+                  "Exception": {
+                    "Message": "  File \"<string>\", line 1, in <module>",
+                    "TargetSite": null,
+                    "Data": {},
+                    "InnerException": null,
+                    "HelpLink": null,
+                    "Source": null,
+                    "HResult": -2146233087,
+                    "StackTrace": null
+                  },
+                  "TargetObject": null,
+                  "CategoryInfo": {
+                    "Category": 0,
+                    "Activity": "",
+                    "Reason": "ParentContainsErrorRecordException",
+                    "TargetName": "",
+                    "TargetType": ""
+                  },
+                  "FullyQualifiedErrorId": "RuntimeException",
+                  "ErrorDetails": null,
+                  "InvocationInfo": null,
+                  "ScriptStackTrace": null,
+                  "PipelineIterationInfo": []
+                },
+                "WasThrownFromThrowStatement": false,
+                "TargetSite": null,
+                "Message": "  File \"<string>\", line 1, in <module>",
+                "Data": {},
+                "InnerException": null,
+                "HelpLink": null,
+                "Source": null,
+                "HResult": -2146233087,
+                "StackTrace": null
+              },
+              "TargetObject": null,
+              "CategoryInfo": {
+                "Category": 0,
+                "Activity": "",
+                "Reason": "RemoteException",
+                "TargetName": "",
+                "TargetType": ""
+              },
+              "FullyQualifiedErrorId": "NativeCommandErrorMessage",
+              "ErrorDetails": null,
+              "InvocationInfo": {
+                "MyCommand": {
+                  "Path": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+                  "Extension": ".exe",
+                  "Definition": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+                  "Source": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+                  "Version": {
+                    "Major": 0,
+                    "Minor": 0,
+                    "Build": 0,
+                    "Revision": 0,
+                    "MajorRevision": 0,
+                    "MinorRevision": 0
+                  },
+                  "Visibility": 0,
+                  "OutputType": [
+                    {
+                      "Name": "System.String",
+                      "Type": "string",
+                      "TypeDefinitionAst": null
+                    }
+                  ],
+                  "Name": "docker.exe",
+                  "CommandType": 32,
+                  "ModuleName": "",
+                  "Module": null,
+                  "RemotingCapability": 1,
+                  "Parameters": null,
+                  "ParameterSets": null
+                },
+                "BoundParameters": {},
+                "UnboundArguments": [],
+                "ScriptLineNumber": 375,
+                "OffsetInLine": 20,
+                "HistoryId": -1,
+                "ScriptName": "D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1",
+                "Line": "        $dbCheck = docker compose -f $COMPOSE_FILE exec -T api python -c \"from api.db import get_session; from api.models_users import Employee; session = next(get_session()); print(session.query(Employee).count())\" 2>&1\r\n",
+                "Statement": "docker compose -f $COMPOSE_FILE exec -T api python -c \"from api.db import get_session; from api.models_users import Employee; session = next(get_session()); print(session.query(Employee).count())\" 2>&1",
+                "PositionMessage": "At D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1:375 char:20\r\n+ …  $dbCheck = docker compose -f $COMPOSE_FILE exec -T api python -c \"fr …\r\n+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+                "PSScriptRoot": "D:\\TelegramOllama_ENV_DEMO\\code\\scripts",
+                "PSCommandPath": "D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1",
+                "InvocationName": "docker",
+                "PipelineLength": 0,
+                "PipelinePosition": 0,
+                "ExpectingInput": false,
+                "CommandOrigin": 1,
+                "DisplayScriptPosition": null
+              },
+              "ScriptStackTrace": "at Invoke-Phase2-SmokeTest, D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1: line 375\r\nat Main, D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1: line 562\r\nat <ScriptBlock>, D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1: line 608\r\nat <ScriptBlock>, <No file>: line 1",
+              "PipelineIterationInfo": [
+                0,
+                0
+              ],
+              "PSMessageDetails": null
+            },
+            {
+              "Exception": {
+                "SerializedRemoteException": null,
+                "SerializedRemoteInvocationInfo": null,
+                "ErrorRecord": {
+                  "Exception": {
+                    "Message": "ModuleNotFoundError: No module named 'api'",
+                    "TargetSite": null,
+                    "Data": {},
+                    "InnerException": null,
+                    "HelpLink": null,
+                    "Source": null,
+                    "HResult": -2146233087,
+                    "StackTrace": null
+                  },
+                  "TargetObject": null,
+                  "CategoryInfo": {
+                    "Category": 0,
+                    "Activity": "",
+                    "Reason": "ParentContainsErrorRecordException",
+                    "TargetName": "",
+                    "TargetType": ""
+                  },
+                  "FullyQualifiedErrorId": "RuntimeException",
+                  "ErrorDetails": null,
+                  "InvocationInfo": null,
+                  "ScriptStackTrace": null,
+                  "PipelineIterationInfo": []
+                },
+                "WasThrownFromThrowStatement": false,
+                "TargetSite": null,
+                "Message": "ModuleNotFoundError: No module named 'api'",
+                "Data": {},
+                "InnerException": null,
+                "HelpLink": null,
+                "Source": null,
+                "HResult": -2146233087,
+                "StackTrace": null
+              },
+              "TargetObject": null,
+              "CategoryInfo": {
+                "Category": 0,
+                "Activity": "",
+                "Reason": "RemoteException",
+                "TargetName": "",
+                "TargetType": ""
+              },
+              "FullyQualifiedErrorId": "NativeCommandErrorMessage",
+              "ErrorDetails": null,
+              "InvocationInfo": {
+                "MyCommand": {
+                  "Path": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+                  "Extension": ".exe",
+                  "Definition": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+                  "Source": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+                  "Version": {
+                    "Major": 0,
+                    "Minor": 0,
+                    "Build": 0,
+                    "Revision": 0,
+                    "MajorRevision": 0,
+                    "MinorRevision": 0
+                  },
+                  "Visibility": 0,
+                  "OutputType": [
+                    {
+                      "Name": "System.String",
+                      "Type": "string",
+                      "TypeDefinitionAst": null
+                    }
+                  ],
+                  "Name": "docker.exe",
+                  "CommandType": 32,
+                  "ModuleName": "",
+                  "Module": null,
+                  "RemotingCapability": 1,
+                  "Parameters": null,
+                  "ParameterSets": null
+                },
+                "BoundParameters": {},
+                "UnboundArguments": [],
+                "ScriptLineNumber": 375,
+                "OffsetInLine": 20,
+                "HistoryId": -1,
+                "ScriptName": "D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1",
+                "Line": "        $dbCheck = docker compose -f $COMPOSE_FILE exec -T api python -c \"from api.db import get_session; from api.models_users import Employee; session = next(get_session()); print(session.query(Employee).count())\" 2>&1\r\n",
+                "Statement": "docker compose -f $COMPOSE_FILE exec -T api python -c \"from api.db import get_session; from api.models_users import Employee; session = next(get_session()); print(session.query(Employee).count())\" 2>&1",
+                "PositionMessage": "At D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1:375 char:20\r\n+ …  $dbCheck = docker compose -f $COMPOSE_FILE exec -T api python -c \"fr …\r\n+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+                "PSScriptRoot": "D:\\TelegramOllama_ENV_DEMO\\code\\scripts",
+                "PSCommandPath": "D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1",
+                "InvocationName": "docker",
+                "PipelineLength": 0,
+                "PipelinePosition": 0,
+                "ExpectingInput": false,
+                "CommandOrigin": 1,
+                "DisplayScriptPosition": null
+              },
+              "ScriptStackTrace": "at Invoke-Phase2-SmokeTest, D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1: line 375\r\nat Main, D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1: line 562\r\nat <ScriptBlock>, D:\\TelegramOllama_ENV_DEMO\\code\\scripts\\deploy_stage3.ps1: line 608\r\nat <ScriptBlock>, <No file>: line 1",
+              "PipelineIterationInfo": [
+                0,
+                0
+              ],
+              "PSMessageDetails": null
+            }
+          ],
+          "status": "WARN"
+        },
+        "auth_check": {
+          "http_code": 404,
+          "endpoint": "/api/auth/login",
+          "status": "WARN"
+        }
+      },
+      "name": "PHASE 2: Smoke Test"
+    },
+    {
+      "timestamp": "2025-11-19T13:57:03.6791812+02:00",
+      "status": "SUCCESS",
+      "details": {
+        "registry": "dockerhub",
+        "duration_seconds": 49.9167728,
+        "pushed_images": [
+          "zasada1980/bux-api:v2.0.0",
+          "zasada1980/bux-api:latest",
+          "zasada1980/bux-bot:v2.0.0",
+          "zasada1980/bux-bot:latest",
+          "zasada1980/bux-agent:v2.0.0",
+          "zasada1980/bux-agent:latest"
+        ]
+      },
+      "name": "PHASE 3: Push"
+    }
+  ],
+  "registry": "dockerhub",
+  "success": true,
+  "version": "v2.0.0",
+  "stage": "Stage 3 - Cloud Deployment Preparation",
+  "errors": [],
+  "duration_seconds": 130.8471874,
+  "registry_urls": [
+    "https://hub.docker.com/r/zasada1980/bux-api",
+    "https://hub.docker.com/r/zasada1980/bux-bot",
+    "https://hub.docker.com/r/zasada1980/bux-agent"
+  ],
+  "artifacts": [
+    "bux-api:local",
+    "bux-bot:local",
+    "bux-agent:local",
+    "zasada1980/bux-api:v2.0.0",
+    "zasada1980/bux-api:latest",
+    "zasada1980/bux-bot:v2.0.0",
+    "zasada1980/bux-bot:latest",
+    "zasada1980/bux-agent:v2.0.0",
+    "zasada1980/bux-agent:latest"
+  ]
+}

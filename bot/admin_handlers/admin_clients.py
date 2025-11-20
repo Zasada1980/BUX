@@ -106,7 +106,7 @@ def _delete_client(client_id: int):
     _update_client(client_id, is_active=0)
 
 
-@router.callback_query(F.data == "adm:clients")
+@router.callback_query(F.data == "admin:clients")
 async def show_clients_list(callback: CallbackQuery, bot: Bot):
     """Show clients list (page 0)."""
     if not _is_admin(callback.from_user.id):
@@ -125,8 +125,8 @@ async def _render_clients_page(callback: CallbackQuery, bot: Bot, page: int):
         # No clients
         text = "📋 <b>Список заказчиков</b>\n\n❌ Заказчиков пока нет"
         kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="➕ Добавить заказчика", callback_data="adm:client:new")],
-            [InlineKeyboardButton(text="◀️ Главное меню", callback_data="adm:panel")]
+            [InlineKeyboardButton(text="➕ Добавить заказчика", callback_data="admin:client:new")],
+            [InlineKeyboardButton(text="◀️ Главное меню", callback_data="admin:panel")]
         ])
         await bot.edit_message_text(
             text,
@@ -158,21 +158,21 @@ async def _render_clients_page(callback: CallbackQuery, bot: Bot, page: int):
     for cl in clients:
         kb_rows.append([InlineKeyboardButton(
             text=f"✏️ {cl['company_name']}",
-            callback_data=f"adm:client:edit:{cl['id']}"
+            callback_data=f"admin:client:edit:{cl['id']}"
         )])
     
     # Pagination
     pag_row = []
     if page > 0:
-        pag_row.append(InlineKeyboardButton(text="◀ Назад", callback_data=f"adm:clients:page:{page-1}"))
+        pag_row.append(InlineKeyboardButton(text="◀ Назад", callback_data=f"admin:clients:page:{page-1}"))
     if (page + 1) * 10 < total:
-        pag_row.append(InlineKeyboardButton(text="Вперёд ▶", callback_data=f"adm:clients:page:{page+1}"))
+        pag_row.append(InlineKeyboardButton(text="Вперёд ▶", callback_data=f"admin:clients:page:{page+1}"))
     if pag_row:
         kb_rows.append(pag_row)
     
     # Add new
-    kb_rows.append([InlineKeyboardButton(text="➕ Добавить заказчика", callback_data="adm:client:new")])
-    kb_rows.append([InlineKeyboardButton(text="◀️ Главное меню", callback_data="adm:panel")])
+    kb_rows.append([InlineKeyboardButton(text="➕ Добавить заказчика", callback_data="admin:client:new")])
+    kb_rows.append([InlineKeyboardButton(text="◀️ Главное меню", callback_data="admin:panel")])
     
     kb = InlineKeyboardMarkup(inline_keyboard=kb_rows)
     
@@ -185,7 +185,7 @@ async def _render_clients_page(callback: CallbackQuery, bot: Bot, page: int):
     )
 
 
-@router.callback_query(F.data.startswith("adm:clients:page:"))
+@router.callback_query(F.data.startswith("admin:clients:page:"))
 async def clients_page_handler(callback: CallbackQuery, bot: Bot):
     """Handle pagination."""
     if not _is_admin(callback.from_user.id):
@@ -197,7 +197,7 @@ async def clients_page_handler(callback: CallbackQuery, bot: Bot):
     await _render_clients_page(callback, bot, page)
 
 
-@router.callback_query(F.data == "adm:client:new")
+@router.callback_query(F.data == "admin:client:new")
 async def start_add_client(callback: CallbackQuery, state: FSMContext, bot: Bot):
     """Start wizard for adding client."""
     if not _is_admin(callback.from_user.id):
@@ -213,7 +213,7 @@ async def start_add_client(callback: CallbackQuery, state: FSMContext, bot: Bot)
         "(это будет видно всем рабочим)"
     )
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="❌ Отмена", callback_data="adm:client:cancel")]
+        [InlineKeyboardButton(text="❌ Отмена", callback_data="admin:client:cancel")]
     ])
     
     await bot.edit_message_text(
@@ -340,13 +340,13 @@ async def receive_daily_rate(message: Message, state: FSMContext, bot: Bot):
         f"Цена/день: {f'₪{daily_rate}' if daily_rate else '—'}"
     )
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📋 К списку заказчиков", callback_data="adm:clients")],
-        [InlineKeyboardButton(text="◀️ Главное меню", callback_data="adm:panel")]
+        [InlineKeyboardButton(text="📋 К списку заказчиков", callback_data="admin:clients")],
+        [InlineKeyboardButton(text="◀️ Главное меню", callback_data="admin:panel")]
     ])
     await message.answer(text, reply_markup=kb, parse_mode="HTML")
 
 
-@router.callback_query(F.data == "adm:client:cancel")
+@router.callback_query(F.data == "admin:client:cancel")
 async def cancel_add_client(callback: CallbackQuery, state: FSMContext, bot: Bot):
     """Cancel wizard."""
     await state.clear()
@@ -354,7 +354,7 @@ async def cancel_add_client(callback: CallbackQuery, state: FSMContext, bot: Bot
     await show_clients_list(callback, bot)
 
 
-@router.callback_query(F.data.startswith("adm:client:edit:"))
+@router.callback_query(F.data.startswith("admin:client:edit:"))
 async def edit_client_menu(callback: CallbackQuery, bot: Bot):
     """Show edit menu for client."""
     if not _is_admin(callback.from_user.id):
@@ -387,15 +387,15 @@ async def edit_client_menu(callback: CallbackQuery, bot: Bot):
     if client['is_active']:
         kb_rows.append([InlineKeyboardButton(
             text="🔴 Отключить заказчика",
-            callback_data=f"adm:client:disable:{client_id}"
+            callback_data=f"admin:client:disable:{client_id}"
         )])
     else:
         kb_rows.append([InlineKeyboardButton(
             text="🟢 Активировать заказчика",
-            callback_data=f"adm:client:enable:{client_id}"
+            callback_data=f"admin:client:enable:{client_id}"
         )])
     
-    kb_rows.append([InlineKeyboardButton(text="◀ К списку заказчиков", callback_data="adm:clients")])
+    kb_rows.append([InlineKeyboardButton(text="◀ К списку заказчиков", callback_data="admin:clients")])
     
     kb = InlineKeyboardMarkup(inline_keyboard=kb_rows)
     
@@ -408,7 +408,7 @@ async def edit_client_menu(callback: CallbackQuery, bot: Bot):
     )
 
 
-@router.callback_query(F.data.startswith("adm:client:disable:"))
+@router.callback_query(F.data.startswith("admin:client:disable:"))
 async def disable_client(callback: CallbackQuery, bot: Bot):
     """Disable client."""
     if not _is_admin(callback.from_user.id):
@@ -422,7 +422,7 @@ async def disable_client(callback: CallbackQuery, bot: Bot):
     await edit_client_menu(callback, bot)
 
 
-@router.callback_query(F.data.startswith("adm:client:enable:"))
+@router.callback_query(F.data.startswith("admin:client:enable:"))
 async def enable_client(callback: CallbackQuery, bot: Bot):
     """Enable client."""
     if not _is_admin(callback.from_user.id):

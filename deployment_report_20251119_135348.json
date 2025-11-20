@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-11-19T13:53:48.0917145+02:00",
+  "phases": [
+    {
+      "timestamp": "2025-11-19T13:54:26.1372615+02:00",
+      "status": "FAILED",
+      "error": "No prod_* images found",
+      "details": {},
+      "name": "PHASE 1: Build"
+    }
+  ],
+  "registry": "dockerhub",
+  "success": false,
+  "version": "v2.0.0",
+  "stage": "Stage 3 - Cloud Deployment Preparation",
+  "errors": [
+    "No prod_* images found"
+  ],
+  "duration_seconds": 38.0469585,
+  "artifacts": []
+}

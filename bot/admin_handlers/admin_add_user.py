@@ -13,7 +13,7 @@ from aiogram.fsm.state import State, StatesGroup
 import logging
 from decimal import Decimal
 
-from bot.config import get_db
+from bot.config import get_db, is_admin
 from api import crud_users
 from api.models_users import UserCreate
 
@@ -27,32 +27,30 @@ class AddUserStates(StatesGroup):
 
 
 def admin_only(func):
-    """Decorator to restrict commands to admins only"""
+    """Decorator to restrict commands to admins only (uses is_admin with BOT_ADMINS fallback)"""
     from functools import wraps
     import inspect
-    
+
     @wraps(func)
     async def wrapper(event, *args, **kwargs):
         user_id = event.from_user.id if hasattr(event, 'from_user') else (
             event.message.from_user.id if hasattr(event, 'message') else 0
         )
-        
-        db = next(get_db())
-        user = crud_users.get_user_by_telegram_id(db, user_id)
-        if not user or user.role != "admin":
-            await (event.answer if isinstance(event, CallbackQuery) else event.reply)(
-                "❌ Доступ запрещён. Требуется роль: admin"
-            )
+
+        if not is_admin(user_id):
+            msg = "❌ Доступ запрещён. Требуется роль: admin"
+            if isinstance(event, CallbackQuery):
+                await event.answer(msg, show_alert=True)
+            else:
+                await event.reply(msg)
             return
-        
+
         # Filter kwargs to only include parameters that func accepts
         sig = inspect.signature(func)
         filtered_kwargs = {k: v for k, v in kwargs.items() if k in sig.parameters}
         return await func(event, *args, **filtered_kwargs)
     return wrapper
-
-
-@router.callback_query(F.data == "adm:add:start")
+@router.callback_query(F.data == "admin:add:start")
 @admin_only
 async def start_add_worker(callback: CallbackQuery, state: FSMContext):
     """Start add worker wizard"""
@@ -60,7 +58,7 @@ async def start_add_worker(callback: CallbackQuery, state: FSMContext):
     await state.set_state(AddUserStates.waiting_name)
     
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="❌ Отмена", callback_data="adm:add:cancel")]
+        [InlineKeyboardButton(text="❌ Отмена", callback_data="admin:add:cancel")]
     ])
     
     await callback.message.edit_text(
@@ -79,10 +77,8 @@ async def receive_worker_name(message: Message, state: FSMContext):
     """Receive worker name"""
     logger.info(f"Received name from {message.from_user.id}: {message.text}")
     
-    # Check admin permission
-    db = next(get_db())
-    user = crud_users.get_user_by_telegram_id(db, message.from_user.id)
-    if not user or user.role != "admin":
+    # Check admin permission using is_admin() from bot.config
+    if not is_admin(message.from_user.id):
         logger.warning(f"Non-admin {message.from_user.id} tried to add user")
         await message.reply("❌ Доступ запрещён. Требуется роль: admin")
         await state.clear()
@@ -104,8 +100,8 @@ async def receive_worker_name(message: Message, state: FSMContext):
     logger.info(f"Moving to waiting_salary state")
     
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="➡️ Пропустить", callback_data="adm:add:skip_salary")],
-        [InlineKeyboardButton(text="❌ Отмена", callback_data="adm:add:cancel")]
+        [InlineKeyboardButton(text="➡️ Пропустить", callback_data="admin:add:skip_salary")],
+        [InlineKeyboardButton(text="❌ Отмена", callback_data="admin:add:cancel")]
     ])
     
     await message.reply(
@@ -142,7 +138,7 @@ async def receive_salary(message: Message, state: FSMContext):
         await message.reply("❌ Введите корректную сумму (число с точкой или без)")
 
 
-@router.callback_query(F.data == "adm:add:skip_salary", AddUserStates.waiting_salary)
+@router.callback_query(F.data == "admin:add:skip_salary", AddUserStates.waiting_salary)
 async def skip_salary(callback: CallbackQuery, state: FSMContext):
     """Skip salary input"""
     logger.info(f"Skipping salary for user {callback.from_user.id}")
@@ -179,8 +175,8 @@ async def create_worker(message: Message, state: FSMContext):
         
         kb = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="📋 Показать карточку", callback_data=f"admin:user:view:{user.id}")],
-            [InlineKeyboardButton(text="➕ Добавить ещё", callback_data="adm:add:start")],
-            [InlineKeyboardButton(text="◀️ Главное меню", callback_data="adm:panel")]
+            [InlineKeyboardButton(text="➕ Добавить ещё", callback_data="admin:add:start")],
+            [InlineKeyboardButton(text="◀️ Главное меню", callback_data="admin:panel")]
         ])
         
         await message.answer(
@@ -202,13 +198,13 @@ async def create_worker(message: Message, state: FSMContext):
         await state.clear()
 
 
-@router.callback_query(F.data == "adm:add:cancel")
+@router.callback_query(F.data == "admin:add:cancel")
 async def cancel_add_worker(callback: CallbackQuery, state: FSMContext):
     """Cancel add worker wizard"""
     await state.clear()
     
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="◀️ Главное меню", callback_data="adm:panel")]
+        [InlineKeyboardButton(text="◀️ Главное меню", callback_data="admin:panel")]
     ])
     
     await callback.message.edit_text(

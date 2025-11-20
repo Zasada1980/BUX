@@ -16,7 +16,13 @@ RUN mkdir -p /app/bot /app/api /app/logs
 # Copy bot code (from context root)
 COPY ./bot /app/bot
 
-# Note: /app/api will be mounted as volume at runtime
+# HOTFIX TD-BOT-ISO-1: Copy minimal API dependencies until HTTP refactoring
+# Required modules: models, models_users, crud_users, utils (for bot handlers)
+COPY ./api/models.py /app/api/
+COPY ./api/models_users.py /app/api/
+COPY ./api/crud_users.py /app/api/
+COPY ./api/utils /app/api/utils
+RUN echo "# stub" > /app/api/__init__.py
 
 # Set PYTHONPATH so "from bot.config" and "from api.crud_users" work
 # Also add /app/api for api module's internal imports (models_users, crud_*, etc.)

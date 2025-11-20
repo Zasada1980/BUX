@@ -17,6 +17,7 @@ import InvoicesPage from '@/pages/InvoicesPage';
 import ShiftsPage from './pages/ShiftsPage';
 import ShiftsCalendarPage from './pages/ShiftsCalendarPage';
 import InboxPage from './pages/InboxPage';
+import ChatPage from './pages/ChatPage';
 import BotMenuPage from './pages/BotMenuPage';
 import SettingsPage from '@/pages/SettingsPage';
 import ProfilePage from '@/pages/ProfilePage';
@@ -129,6 +130,17 @@ function App() {
               <RequireRole allowedRoles={['admin', 'foreman']}>
                 <MainLayout>
                   <InboxPage />
+                </MainLayout>
+              </RequireRole>
+            }
+          />
+
+          <Route
+            path={ROUTES.CHAT}
+            element={
+              <RequireRole allowedRoles={['admin', 'foreman']}>
+                <MainLayout>
+                  <ChatPage />
                 </MainLayout>
               </RequireRole>
             }

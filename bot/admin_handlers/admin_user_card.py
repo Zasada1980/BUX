@@ -50,7 +50,7 @@ def admin_only(func):
     return wrapper
 
 
-@router.callback_query(F.data.startswith("adm:user:"))
+@router.callback_query(F.data.startswith("admin:user:"))
 @admin_only
 async def show_user_card(callback: CallbackQuery, bot: Bot):
     """Show user card with action buttons"""
@@ -92,10 +92,10 @@ async def show_user_card(callback: CallbackQuery, bot: Bot):
     # Action buttons
     buttons = [
         [
-            InlineKeyboardButton(text="🔄 Изменить роль", callback_data=f"adm:role:{user.id}"),
+            InlineKeyboardButton(text="🔄 Изменить роль", callback_data=f"admin:role:{user.id}"),
             InlineKeyboardButton(
                 text="🔓 Активировать" if not user.active else "🔒 Деактивировать",
-                callback_data=f"adm:toggle:{user.id}"
+                callback_data=f"admin:toggle:{user.id}"
             )
         ]
     ]
@@ -103,18 +103,18 @@ async def show_user_card(callback: CallbackQuery, bot: Bot):
     # Add salary and data edit buttons only for workers/foremen
     if user.role in ("worker", "foreman"):
         buttons.append([
-            InlineKeyboardButton(text="💰 Изменить зарплату", callback_data=f"adm:salary:{user.id}")
+            InlineKeyboardButton(text="💰 Изменить зарплату", callback_data=f"admin:salary:{user.id}")
         ])
         buttons.append([
-            InlineKeyboardButton(text="✏️ Изменить данные", callback_data=f"adm:editdata:{user.id}")
+            InlineKeyboardButton(text="✏️ Изменить данные", callback_data=f"admin:editdata:{user.id}")
         ])
     
     buttons.extend([
         [
-            InlineKeyboardButton(text="🗑️ Удалить", callback_data=f"adm:delete:{user.id}:confirm")
+            InlineKeyboardButton(text="🗑️ Удалить", callback_data=f"admin:delete:{user.id}:confirm")
         ],
         [
-            InlineKeyboardButton(text="◀️ К списку", callback_data="adm:users:0")
+            InlineKeyboardButton(text="◀️ К списку", callback_data="admin:users:0")
         ]
     ])
     
@@ -124,7 +124,7 @@ async def show_user_card(callback: CallbackQuery, bot: Bot):
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("adm:role:"))
+@router.callback_query(F.data.startswith("admin:role:"))
 @admin_only
 async def change_role_menu(callback: CallbackQuery):
     """Show role selection menu"""
@@ -138,14 +138,14 @@ async def change_role_menu(callback: CallbackQuery):
     
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="👷 Рабочий", callback_data=f"adm:setrole:{user.id}:worker"),
-            InlineKeyboardButton(text="👨‍💼 Бригадир", callback_data=f"adm:setrole:{user.id}:foreman")
+            InlineKeyboardButton(text="👷 Рабочий", callback_data=f"admin:setrole:{user.id}:worker"),
+            InlineKeyboardButton(text="👨‍💼 Бригадир", callback_data=f"admin:setrole:{user.id}:foreman")
         ],
         [
-            InlineKeyboardButton(text="🔧 Админ", callback_data=f"adm:setrole:{user.id}:admin")
+            InlineKeyboardButton(text="🔧 Админ", callback_data=f"admin:setrole:{user.id}:admin")
         ],
         [
-            InlineKeyboardButton(text="◀️ Отмена", callback_data=f"adm:user:{user.id}")
+            InlineKeyboardButton(text="◀️ Отмена", callback_data=f"admin:user:{user.id}")
         ]
     ])
     
@@ -160,7 +160,7 @@ async def change_role_menu(callback: CallbackQuery):
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("adm:setrole:"))
+@router.callback_query(F.data.startswith("admin:setrole:"))
 @admin_only
 async def set_role(callback: CallbackQuery):
     """Set new role for user"""
@@ -190,7 +190,7 @@ async def set_role(callback: CallbackQuery):
         await callback.answer("❌ Ошибка обновления роли")
 
 
-@router.callback_query(F.data.startswith("adm:toggle:"))
+@router.callback_query(F.data.startswith("admin:toggle:"))
 @admin_only
 async def toggle_active(callback: CallbackQuery):
     """Toggle user active status"""
@@ -216,7 +216,7 @@ async def toggle_active(callback: CallbackQuery):
         await callback.answer("❌ Ошибка обновления статуса")
 
 
-@router.callback_query(F.data.startswith("adm:delete:") & F.data.endswith(":confirm"))
+@router.callback_query(F.data.startswith("admin:delete:") & F.data.endswith(":confirm"))
 @admin_only
 async def confirm_delete(callback: CallbackQuery):
     """Show delete confirmation"""
@@ -230,8 +230,8 @@ async def confirm_delete(callback: CallbackQuery):
     
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="✅ Да, удалить", callback_data=f"adm:delete:{user.id}:execute"),
-            InlineKeyboardButton(text="❌ Отмена", callback_data=f"adm:user:{user.id}")
+            InlineKeyboardButton(text="✅ Да, удалить", callback_data=f"admin:delete:{user.id}:execute"),
+            InlineKeyboardButton(text="❌ Отмена", callback_data=f"admin:user:{user.id}")
         ]
     ])
     
@@ -249,7 +249,7 @@ async def confirm_delete(callback: CallbackQuery):
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("adm:delete:") & F.data.endswith(":execute"))
+@router.callback_query(F.data.startswith("admin:delete:") & F.data.endswith(":execute"))
 @admin_only
 async def execute_delete(callback: CallbackQuery):
     """Execute user deletion"""
@@ -283,7 +283,7 @@ async def execute_delete(callback: CallbackQuery):
         await callback.answer("❌ Ошибка удаления пользователя")
 
 
-@router.callback_query(F.data.startswith("adm:salary:"))
+@router.callback_query(F.data.startswith("admin:salary:"))
 async def start_edit_salary(callback: CallbackQuery, state: FSMContext):
     """Start salary editing wizard"""
     user_id = int(callback.data.split(":")[-1])
@@ -322,7 +322,7 @@ async def cancel_edit_salary(callback: CallbackQuery, state: FSMContext):
     user_id = int(callback.data.split(":")[-1])
     
     # Return to user card
-    callback.data = f"adm:user:{user_id}"
+    callback.data = f"admin:user:{user_id}"
     await show_user_card(callback)
 
 
@@ -391,7 +391,7 @@ async def receive_new_salary(message: Message, state: FSMContext):
 
 # ==================== EDIT DATA HANDLERS ====================
 
-@router.callback_query(F.data.startswith("adm:editdata:name:"))
+@router.callback_query(F.data.startswith("admin:editdata:name:"))
 async def edit_name_start(callback: CallbackQuery, state: FSMContext):
     """Start editing user name"""
     user_id = int(callback.data.split(":")[-1])
@@ -413,7 +413,7 @@ async def edit_name_start(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("adm:editdata:username:"))
+@router.callback_query(F.data.startswith("admin:editdata:username:"))
 async def edit_username_start(callback: CallbackQuery, state: FSMContext):
     """Start editing username"""
     user_id = int(callback.data.split(":")[-1])
@@ -436,7 +436,7 @@ async def edit_username_start(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("adm:editdata:phone:"))
+@router.callback_query(F.data.startswith("admin:editdata:phone:"))
 async def edit_phone_start(callback: CallbackQuery, state: FSMContext):
     """Start editing phone"""
     user_id = int(callback.data.split(":")[-1])
@@ -459,7 +459,7 @@ async def edit_phone_start(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@router.callback_query(F.data.regexp(r"^adm:editdata:\d+$"))
+@router.callback_query(F.data.regexp(r"^admin:editdata:\d+$"))
 async def start_edit_data(callback: CallbackQuery, state: FSMContext):
     """Show data edit menu: name or username"""
     user_id = int(callback.data.split(":")[-1])
@@ -489,9 +489,9 @@ async def start_edit_data(callback: CallbackQuery, state: FSMContext):
     )
     
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="👤 Изменить имя", callback_data=f"adm:editdata:name:{user_id}")],
-        [InlineKeyboardButton(text="📱 Изменить @username", callback_data=f"adm:editdata:username:{user_id}")],
-        [InlineKeyboardButton(text="☎️ Изменить телефон", callback_data=f"adm:editdata:phone:{user_id}")],
+        [InlineKeyboardButton(text="👤 Изменить имя", callback_data=f"admin:editdata:name:{user_id}")],
+        [InlineKeyboardButton(text="📱 Изменить @username", callback_data=f"admin:editdata:username:{user_id}")],
+        [InlineKeyboardButton(text="☎️ Изменить телефон", callback_data=f"admin:editdata:phone:{user_id}")],
         [InlineKeyboardButton(text="❌ Отмена", callback_data=f"admin:editdata:cancel:{user_id}")]
     ])
     
@@ -706,13 +706,13 @@ async def cancel_edit_data(callback: CallbackQuery, state: FSMContext, bot: Bot)
         from_user=callback.from_user,
         message=callback.message,
         chat_instance=callback.chat_instance,
-        data=f"adm:user:{user_id}"
+        data=f"admin:user:{user_id}"
     )
     
     await show_user_card(fake_callback, bot)
 
 
-@router.callback_query(F.data == "adm:noop")
+@router.callback_query(F.data == "admin:noop")
 async def noop(callback: CallbackQuery):
     """No-op for pagination counter button"""
     await callback.answer()

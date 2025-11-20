@@ -34,6 +34,7 @@ class AddExpenseStates(StatesGroup):
 async def start_add_task(callback: CallbackQuery, state: FSMContext, bot: Bot):
     """Start adding task wizard."""
     user_id = callback.from_user.id
+    await callback.answer()  # Немедленный ответ
     
     # Check active shift
     db = SessionLocal()
@@ -43,7 +44,7 @@ async def start_add_task(callback: CallbackQuery, state: FSMContext, bot: Bot):
         
         worker = db.query(User).filter(User.telegram_id == user_id).first()
         if not worker:
-            await callback.answer("❌ Вы не найдены в системе", show_alert=True)
+            await callback.message.answer("❌ Вы не найдены в системе")
             return
         
         active_shift = db.query(Shift).filter(
@@ -146,8 +147,9 @@ async def cancel_add_task(callback: CallbackQuery, state: FSMContext, bot: Bot):
 
 @router.callback_query(F.data == "wrk:expense:new")
 async def start_add_expense(callback: CallbackQuery, state: FSMContext, bot: Bot):
-    """Start adding expense wizard."""
+    """Start adding expense wizard (requires active shift)."""
     user_id = callback.from_user.id
+    await callback.answer()  # Немедленный ответ
     
     # Check active shift
     db = SessionLocal()
@@ -157,7 +159,7 @@ async def start_add_expense(callback: CallbackQuery, state: FSMContext, bot: Bot
         
         worker = db.query(User).filter(User.telegram_id == user_id).first()
         if not worker:
-            await callback.answer("❌ Вы не найдены в системе", show_alert=True)
+            await callback.message.answer("❌ Вы не найдены в системе")
             return
         
         active_shift = db.query(Shift).filter(
@@ -197,6 +199,7 @@ async def start_add_expense(callback: CallbackQuery, state: FSMContext, bot: Bot
 async def start_add_expense_standalone(callback: CallbackQuery, state: FSMContext, bot: Bot):
     """Start adding expense without active shift (from expenses list)."""
     user_id = callback.from_user.id
+    await callback.answer()  # Немедленный ответ
     
     db = SessionLocal()
     try:
@@ -204,7 +207,7 @@ async def start_add_expense_standalone(callback: CallbackQuery, state: FSMContex
         
         worker = db.query(User).filter(User.telegram_id == user_id).first()
         if not worker:
-            await callback.answer("❌ Вы не найдены в системе", show_alert=True)
+            await callback.message.answer("❌ Вы не найдены в системе")
             return
         
         # Save user_id, no shift_id (None)
@@ -234,6 +237,7 @@ async def start_add_expense_standalone(callback: CallbackQuery, state: FSMContex
 @router.callback_query(F.data.startswith("wrk:expense:cat:"))
 async def receive_expense_category(callback: CallbackQuery, state: FSMContext, bot: Bot):
     """Receive expense category."""
+    await callback.answer()  # Немедленный ответ
     category = callback.data.split(":")[-1]
     
     category_map = {
@@ -353,7 +357,7 @@ async def save_expense_to_db(message: Message, state: FSMContext, photo_ref: str
             user_id=user_id,
             shift_id=shift_id,
             category=category,
-            amount=amount,
+            amount=int(amount * 100),  # Convert ILS to agorot
             created_at=datetime.now(ZoneInfo("Asia/Jerusalem"))
         )
         db.add(expense)

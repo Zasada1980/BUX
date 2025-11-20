@@ -34,6 +34,8 @@ LICENSE
 README.md
 logs/api.jsonl
 logs/bot.jsonl
+logs/
+*.log
 
 # CI-8E: Exclude api symlink (will be created in Dockerfile)
 api

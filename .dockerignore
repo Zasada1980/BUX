@@ -1,0 +1,75 @@
+# Root-level .dockerignore for multi-service Docker builds
+# (когда контекст сборки = корень проекта)
+
+# Python
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.Python
+**/.venv
+**/venv
+**/env
+**/*.egg-info
+**/.pytest_cache
+
+# IDE / Editors
+**/.vscode
+**/.idea
+**/.DS_Store
+**/*.swp
+**/*.swo
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+**/.dockerignore
+**/Dockerfile
+**/docker-compose*.yml
+
+# Environment
+**/.env
+**/.env.*
+**/secrets.dev.yaml
+**/values.dev.yaml
+
+# Logs (критично!)
+**/logs/
+**/*.log
+**/*.jsonl
+api/logs/
+bot/logs/
+agent/logs/
+
+# Database files (не копируем локальные БД в образ)
+db/*.db
+db/*.db-*
+!db/alembic/  # НО миграции нужны!
+
+# Backups
+backups/
+**/backups/
+
+# Documentation
+README.md
+LICENSE
+**/README.md
+**.md
+!db/alembic/README  # Кроме README миграций
+
+# Node modules (если есть frontend в api/web)
+**/node_modules/
+**/dist/
+**/build/
+
+# Temporary files
+**/.tmp
+**/tmp/
+**/*.tmp
+
+# Reports
+reports/
+deployment_report_*.json

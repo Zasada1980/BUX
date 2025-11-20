@@ -67,6 +67,7 @@ def _get_today_schedule(worker_id: int):
 async def start_shift_choose_client(callback: CallbackQuery, state: FSMContext, bot: Bot):
     """Show client selection for shift start."""
     user_id = callback.from_user.id
+    await callback.answer()  # Немедленный ответ
     
     db = SessionLocal()
     try:
@@ -75,7 +76,7 @@ async def start_shift_choose_client(callback: CallbackQuery, state: FSMContext, 
         
         worker = db.query(User).filter(User.telegram_id == user_id).first()
         if not worker:
-            await callback.answer("❌ Вы не найдены в системе", show_alert=True)
+            await callback.message.answer("❌ Вы не найдены в системе")
             return
         
         # Check if already has active shift
@@ -152,13 +153,14 @@ async def start_shift_choose_client(callback: CallbackQuery, state: FSMContext, 
 async def start_shift_with_client(callback: CallbackQuery, state: FSMContext, bot: Bot):
     """Start shift with selected client."""
     user_id = callback.from_user.id
+    await callback.answer()  # Немедленный ответ
+    
     parts = callback.data.split(":")
     client_id_str = parts[3] if len(parts) > 3 else "0"
     work_address = parts[4] if len(parts) > 4 and parts[4] else None
     
     # Handle noop (section headers)
     if client_id_str == "noop":
-        await callback.answer()
         return
     
     client_id = int(client_id_str) if client_id_str != "0" else None
@@ -226,6 +228,7 @@ async def start_shift_with_client(callback: CallbackQuery, state: FSMContext, bo
 async def end_shift(callback: CallbackQuery, bot: Bot):
     """End active shift."""
     user_id = callback.from_user.id
+    await callback.answer()  # Немедленный ответ
     
     db = SessionLocal()
     try:
@@ -235,7 +238,7 @@ async def end_shift(callback: CallbackQuery, bot: Bot):
         
         worker = db.query(User).filter(User.telegram_id == user_id).first()
         if not worker:
-            await callback.answer("❌ Вы не найдены в системе", show_alert=True)
+            await callback.message.answer("❌ Вы не найдены в системе")
             return
         
         # Find active shift

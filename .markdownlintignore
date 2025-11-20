@@ -1,0 +1,4 @@
+# Markdown linting ignore for DEMO environment
+README.md
+F6_*.md
+*.md

@@ -7,6 +7,8 @@ export interface User {
   id: number;
   name: string;
   telegram_id: string;
+  telegram_username?: string;
+  phone?: string;
   role: UserRole;
   status: UserStatus;
   created_at: string;

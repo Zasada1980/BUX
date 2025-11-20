@@ -28,7 +28,7 @@ log_dir.mkdir(parents=True, exist_ok=True)
 log_file = log_dir / "bot.log"
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,  # Changed to DEBUG for callback troubleshooting
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(),  # Console output
@@ -37,6 +37,22 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 router = Router()
+
+# Debug middleware to log all updates
+from aiogram import BaseMiddleware
+from aiogram.types import Update
+from typing import Callable, Awaitable, Dict, Any
+
+class DebugMiddleware(BaseMiddleware):
+    async def __call__(
+        self,
+        handler: Callable[[Update, Dict[str, Any]], Awaitable[Any]],
+        event: Update,
+        data: Dict[str, Any]
+    ) -> Any:
+        if event.callback_query:
+            logger.info(f"🔔 CALLBACK: {event.callback_query.data} from user {event.callback_query.from_user.id}")
+        return await handler(event, data)
 
 @router.message(Command("start"))
 async def cmd_start(message: Message):
@@ -311,6 +327,10 @@ async def main():
     logger.info("✅ Bot commands configured")
     
     dp = Dispatcher()
+    
+    # Add debug middleware to log all callbacks
+    dp.update.middleware(DebugMiddleware())
+    
     dp.include_router(test_api_router)  # TEST: APIClient verification (must be early for /test_api)
     dp.include_router(wizard_router)  # H-BOT-2: Must be FIRST for FSM priority
     dp.include_router(admin_add_router)  # UI-3: Add user wizard (FSM states) - RESTORED

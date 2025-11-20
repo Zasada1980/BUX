@@ -14,7 +14,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:8188',  // DEMO env uses port 8188 (docker-compose.yml demo_api)
+        target: 'http://localhost:8188', // DEMO environment (docker compose)
         changeOrigin: true,
       },
     },

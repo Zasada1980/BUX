@@ -1,6 +1,6 @@
 """TelegramOllama API."""
-from fastapi import FastAPI, Header, HTTPException, Query, Depends, Request, status, BackgroundTasks
-from fastapi.responses import HTMLResponse, StreamingResponse  # E2: HTMX invoice views; CSV export
+from fastapi import FastAPI, Header, HTTPException, Query, Depends, Request, status, BackgroundTasks, Body
+from fastapi.responses import HTMLResponse, StreamingResponse, FileResponse  # E2: HTMX invoice views; CSV export; SPA fallback
 from fastapi.staticfiles import StaticFiles  # E1: static assets
 from fastapi.middleware.cors import CORSMiddleware
 import platform
@@ -19,7 +19,7 @@ from pathlib import Path
 
 from config import settings
 from db import SessionLocal
-from models import Shift, Invoice, Client, Task, Expense  # CRITICAL FIX: Added Task, Expense for CRUD endpoints
+from models import Shift, Invoice, Client, Task, Expense, Employee  # CRITICAL FIX: Added Task, Expense for CRUD endpoints, Employee for auth
 from schemas import ShiftStartIn, ShiftOut, TaskAddIn, TaskOut, ExpenseAddIn, ExpenseOut, ShiftEndIn, ShiftEndOut, InvoiceBuildIn, InvoiceOut, PricingStep, OcrBlock, ItemDetailsOut
 # NOTE: ensure_table removed - idempotency_keys now managed by Alembic (a1b2c3d4e5f6)
 from utils.idempotency import remember
@@ -329,6 +329,44 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 # All API routes are under /api prefix, so this should not conflict
 # MOVED TO END OF FILE (after all @app.get() decorators) to prevent route collision
 # app.mount("/", StaticFiles(directory="web", html=True), name="web")
+
+
+# === AI Chat Endpoint (Stub - Ollama integration pending) ===
+from pydantic import BaseModel as PydanticBaseModel
+from auth import get_current_employee, get_db
+
+class ChatMessage(PydanticBaseModel):
+    role: str
+    content: str
+
+class ChatRequest(PydanticBaseModel):
+    message: str
+    history: list[ChatMessage] = []
+
+class ChatResponse(PydanticBaseModel):
+    response: str
+    error: str | None = None
+
+@app.post("/api/chat", response_model=ChatResponse, tags=["ai"])
+async def chat_endpoint(
+    request: ChatRequest,
+    current_employee: Employee = Depends(get_current_employee),
+    db: Session = Depends(get_db)
+):
+    """
+    AI Chat endpoint (currently stub - returns helpful error message).
+    
+    TODO (TD-AI-CHAT-1):
+    - Integrate with Ollama service (agent:8080 or ollama:11434)
+    - Implement conversation history management
+    - Add streaming response support
+    - Add rate limiting (P2)
+    """
+    return ChatResponse(
+        response="",
+        error="AI Chat временно недоступен. Ollama интеграция в разработке (TD-AI-CHAT-1). "
+              "Попробуйте позже или обратитесь к администратору для настройки Ollama."
+    )
 
 
 # TD-C1: Pricing explanation endpoint
@@ -1471,22 +1509,62 @@ def admin_bulk_approve_pending(
 # MVP P0: Clients & Invoices API (for Web UI)
 # ════════════════════════════════════════════════════════════════════════════
 
-@app.get("/api/clients", dependencies=[Depends(admin_guard)])
-def list_clients():
+@app.get("/api/clients")
+def list_clients(
+    admin: dict = Depends(get_current_admin),  # F4.5: JWT auth support (like other admin endpoints)
+    s: Session = Depends(get_session),
+):
     """List all clients for invoice filter dropdown (MVP P0 - Step 3)."""
-    with SessionLocal() as s:
-        clients = s.query(Client).filter(Client.is_active == 1).all()
-        return {
-            "items": [
-                {
-                    "id": c.id,
-                    "name": c.company_name,
-                    "nickname1": c.nickname1,
-                    "nickname2": c.nickname2,
-                }
-                for c in clients
-            ]
-        }
+    clients = s.query(Client).filter(Client.is_active == 1).all()
+    return {
+        "items": [
+            {
+                "id": c.id,
+                "name": c.company_name,
+                "nickname1": c.nickname1,
+                "nickname2": c.nickname2,
+            }
+            for c in clients
+        ]
+    }
+
+
+@app.post("/api/clients", status_code=status.HTTP_201_CREATED)
+def create_client(
+    request: Request,
+    admin: dict = Depends(get_current_admin),
+    s: Session = Depends(get_session),
+):
+    """Create new client."""
+    from pydantic import BaseModel
+    
+    class ClientCreate(BaseModel):
+        name: str
+        contact: str | None = None
+        default_pricing_rule: str | None = None
+    
+    # Parse JSON body
+    import asyncio
+    body_bytes = asyncio.run(request.body())
+    client_data = ClientCreate.model_validate_json(body_bytes)
+    
+    new_client = Client(
+        company_name=client_data.name,
+        nickname1=client_data.name,  # Use name as nickname1 for now
+        nickname2=None,
+        phone=client_data.contact,
+        daily_rate=None,  # Not in form
+        is_active=1
+    )
+    s.add(new_client)
+    s.commit()
+    s.refresh(new_client)
+    return {
+        "id": new_client.id,
+        "name": new_client.company_name,
+        "nickname1": new_client.nickname1,
+        "nickname2": new_client.nickname2,
+    }
 
 
 # F4.5: CSV Export for Invoices (MUST be before /api/invoices/{invoice_id} to avoid route conflict)
@@ -1664,8 +1742,10 @@ def get_invoice_details(invoice_id: int):
 # These endpoints were MISSING but used by frontend (ClientsPage, ExpensesPage, InvoicesPage)
 # // API CHANGE: Added critical missing endpoints for list operations
 
-@app.get("/api/tasks", dependencies=[Depends(admin_guard)])
+@app.get("/api/tasks")
 def list_tasks(
+    admin: dict = Depends(get_current_admin),  # F4.5: JWT auth support
+    s: Session = Depends(get_session),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     status: str | None = Query(None),
@@ -1673,58 +1753,16 @@ def list_tasks(
     date_from: str | None = Query(None),
     date_to: str | None = Query(None),
 ):
-    """List tasks with pagination and filters (Web UI CRUD)."""
-    with SessionLocal() as s:
-        # Build dynamic WHERE clause
-        where_clauses = []
-        params = {}
-        
-        if status and status != "all":
-            where_clauses.append("status = :status")
-            params["status"] = status
-        if worker:
-            where_clauses.append("worker LIKE :worker")
-            params["worker"] = f"%{worker}%"
-        if date_from:
-            where_clauses.append("date >= :date_from")
-            params["date_from"] = date_from
-        if date_to:
-            where_clauses.append("date <= :date_to")
-            params["date_to"] = date_to
-        
-        where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
-        
-        # Count total
-        count_sql = f"SELECT COUNT(*) FROM tasks WHERE {where_sql}"
-        total = s.execute(text(count_sql), params).scalar()
-        
-        # Fetch page
-        offset = (page - 1) * limit
-        query_sql = f"""
-            SELECT * FROM tasks
-            WHERE {where_sql}
-            ORDER BY date DESC, id DESC
-            LIMIT :limit OFFSET :offset
-        """
-        params["limit"] = limit
-        params["offset"] = offset
-        rows = s.execute(text(query_sql), params).fetchall()
-        
-        items = [
-            {
-                "id": r.id,
-                "worker": r.worker,
-                "date": r.date,
-                "status": r.status,
-                "description": r.description,
-                "hours": float(r.hours) if r.hours else 0,
-                "created_at": r.created_at,
-            }
-            for r in rows
-        ]
-        
-        pages = (total + limit - 1) // limit
-        return {"items": items, "total": total, "pages": pages, "page": page}
+    """List tasks with pagination and filters (Web UI CRUD).
+    
+    NOTE: Tasks feature not yet fully implemented in backend.
+    Returns empty list until full data model is ready.
+    Frontend expects: worker_id, client_id, description, pricing_rule, quantity, amount, date, status
+    Database has: shift_id, rate_code, qty, amount, note (different structure)
+    TODO: Implement proper work tasks data model or create VIEW joining shifts+tasks+users+clients
+    """
+    # Return empty list for now (prevents 500 errors)
+    return {"items": [], "total": 0, "pages": 0, "page": page}
 
 
 @app.get("/api/expenses")
@@ -4010,11 +4048,38 @@ def dashboard_recent(
 # SPA MOUNT (MUST BE LAST!)
 # ══════════════════════════════════════════════════════════════════════════════
 # Web interface (SPA) — mounted at "/" to serve React app
-# CRITICAL: This MUST be registered AFTER all @app.get()/@app.post() decorators
-# Otherwise StaticFiles intercepts /api/* routes and returns 404
-WEB_DIR = Path(__file__).parent / "web"
-WEB_DIR.mkdir(exist_ok=True)  # Create if doesn't exist (for tests)
-app.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="web")
+# CRITICAL: API routes (/api/*) are registered BEFORE this section
+WEB_DIR = Path(__file__).parent / "web" / "dist"  # Production build directory
+WEB_DIR.mkdir(exist_ok=True, parents=True)  # Create if doesn't exist (for tests)
+
+# SPA fallback function (will be registered manually AFTER all routers)
+async def serve_spa(request: Request):
+    """
+    Catch-all for SPA routing.
+    - Serves static files from dist/ if they exist
+    - Falls back to index.html for client-side routes
+    """
+    # Extract path from request
+    full_path = request.path_params.get("full_path", "")
+    
+    # Try to serve file if it exists
+    file_path = WEB_DIR / full_path
+    if file_path.is_file():
+        return FileResponse(file_path)
+    
+    # Fallback to index.html for SPA routing
+    index_path = WEB_DIR / "index.html"
+    if index_path.exists():
+        return FileResponse(index_path)
+    
+    # If index.html missing, return error
+    raise HTTPException(status_code=404, detail="SPA not built")
+
+# Register SPA catch-all route AFTER all API routers
+from starlette.routing import Route
+app.router.routes.append(
+    Route("/{full_path:path}", endpoint=serve_spa, methods=["GET"], include_in_schema=False)
+)
 
 
 

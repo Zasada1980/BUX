@@ -29,17 +29,17 @@ class SalaryImportStates(StatesGroup):
 def get_salary_menu_keyboard() -> InlineKeyboardMarkup:
     """Главное меню зарплат."""
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📊 Импорт из Excel", callback_data="sal:import")],
-        [InlineKeyboardButton(text="📋 Список зарплат", callback_data="sal:list")],
-        [InlineKeyboardButton(text="◀️ Назад в админку", callback_data="adm:panel")]
+        [InlineKeyboardButton(text="📊 Импорт из Excel", callback_data="admin:salaries:import")],
+        [InlineKeyboardButton(text="📋 Список зарплат", callback_data="admin:salaries:list")],
+        [InlineKeyboardButton(text="◀️ Назад в админку", callback_data="admin:panel")]
     ])
 
 
 def get_import_confirm_keyboard() -> InlineKeyboardMarkup:
     """Клавиатура подтверждения импорта."""
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✅ Подтвердить импорт", callback_data="sal:apply")],
-        [InlineKeyboardButton(text="❌ Отменить", callback_data="sal:menu")]
+        [InlineKeyboardButton(text="✅ Подтвердить импорт", callback_data="admin:salaries:apply")],
+        [InlineKeyboardButton(text="❌ Отменить", callback_data="admin:salaries:menu")]
     ])
 
 
@@ -63,13 +63,13 @@ async def show_salary_menu(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@router.callback_query(F.data == "sal:menu")
+@router.callback_query(F.data == "admin:salaries:menu")
 async def back_to_salary_menu(callback: CallbackQuery, state: FSMContext):
     """Возврат в меню зарплат."""
     await show_salary_menu(callback, state)
 
 
-@router.callback_query(F.data == "sal:import")
+@router.callback_query(F.data == "admin:salaries:import")
 async def start_salary_import(callback: CallbackQuery, state: FSMContext):
     """Начало импорта зарплат из Excel."""
     text = (
@@ -145,7 +145,7 @@ async def receive_excel_data(message: Message, state: FSMContext):
     )
 
 
-@router.callback_query(F.data == "sal:apply", SalaryImportStates.confirm_import)
+@router.callback_query(F.data == "admin:salaries:apply", SalaryImportStates.confirm_import)
 async def apply_salary_import(callback: CallbackQuery, state: FSMContext):
     """Применение импорта зарплат в БД."""
     data = await state.get_data()
@@ -198,7 +198,7 @@ async def apply_salary_import(callback: CallbackQuery, state: FSMContext):
     await callback.answer("✅ Импорт завершён")
 
 
-@router.callback_query(F.data == "sal:list")
+@router.callback_query(F.data == "admin:salaries:list")
 async def show_salary_list(callback: CallbackQuery):
     """Список последних зарплат."""
     async with httpx.AsyncClient() as client:

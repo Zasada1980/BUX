@@ -203,6 +203,7 @@ async def cmd_worker_panel(message: Message):
 async def show_month_selector(callback: CallbackQuery, bot: Bot):
     """Show month selector (up to 3 months back with shifts)."""
     user_id = callback.from_user.id
+    await callback.answer()  # Немедленный ответ
     
     db = SessionLocal()
     try:
@@ -213,7 +214,7 @@ async def show_month_selector(callback: CallbackQuery, bot: Bot):
         
         worker = db.query(User).filter(User.telegram_id == user_id).first()
         if not worker:
-            await callback.answer("❌ Вы не найдены в системе", show_alert=True)
+            await callback.message.answer("❌ Вы не найдены в системе")
             return
         
         # Get distinct months with shifts (up to 3 months back, excluding current)
@@ -288,6 +289,7 @@ async def show_month_selector(callback: CallbackQuery, bot: Bot):
 async def show_shifts_history(callback: CallbackQuery, bot: Bot):
     """Show worker's shifts history with pagination (optionally filtered by month)."""
     user_id = callback.from_user.id
+    await callback.answer()  # Немедленный ответ
     
     # Parse callback data
     parts = callback.data.split(":")
@@ -310,7 +312,7 @@ async def show_shifts_history(callback: CallbackQuery, bot: Bot):
         
         worker = db.query(User).filter(User.telegram_id == user_id).first()
         if not worker:
-            await callback.answer("❌ Вы не найдены в системе", show_alert=True)
+            await callback.message.answer("❌ Вы не найдены в системе")
             return
         
         # Get shifts (only completed, newest first) with optional month filter
@@ -552,6 +554,7 @@ async def show_shifts_history(callback: CallbackQuery, bot: Bot):
 async def back_to_worker_panel(callback: CallbackQuery, bot: Bot):
     """Return to worker panel."""
     user_id = callback.from_user.id
+    await callback.answer()  # Немедленный ответ
     
     # Get worker info
     db = SessionLocal()
@@ -562,7 +565,7 @@ async def back_to_worker_panel(callback: CallbackQuery, bot: Bot):
         
         worker = db.query(User).filter(User.telegram_id == user_id).first()
         if not worker:
-            await callback.answer("❌ Вы не найдены в системе", show_alert=True)
+            await callback.message.answer("❌ Вы не найдены в системе")
             return
         
         # Check active shift
@@ -626,6 +629,7 @@ async def back_to_worker_panel(callback: CallbackQuery, bot: Bot):
 async def show_worker_profile(callback: CallbackQuery, bot: Bot):
     """Show worker profile card."""
     user_id = callback.from_user.id
+    await callback.answer()  # Немедленный ответ
     
     db = SessionLocal()
     try:
@@ -635,7 +639,7 @@ async def show_worker_profile(callback: CallbackQuery, bot: Bot):
         
         worker = db.query(User).filter(User.telegram_id == user_id).first()
         if not worker:
-            await callback.answer("❌ Вы не найдены в системе", show_alert=True)
+            await callback.message.answer("❌ Вы не найдены в системе")
             return
         
         # Statistics

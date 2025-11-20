@@ -7,7 +7,6 @@ import Modal from '@/components/ui/Modal';
 import { useToast } from '@/contexts/ToastContext';
 import { useApi } from '@/hooks/useApi';
 import { apiClient } from '@/lib/apiClient';
-import { formatDate } from '@/utils/format';
 import type { Shift } from '@/types';
 import { exportToCsv, getCurrentDateForFilename } from '@/lib/exportCsv';
 
@@ -50,12 +49,6 @@ export default function ShiftsPage() {
     const h = Math.floor(hours);
     const m = Math.round((hours - h) * 60);
     return m > 0 ? `${h}h ${m}m` : `${h}h`;
-  };
-
-  const formatTime = (datetime?: string): string => {
-    if (!datetime) return '—';
-    const date = new Date(datetime);
-    return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   };
 
   const formatDateTime = (datetime?: string): string => {
@@ -343,24 +336,14 @@ export default function ShiftsPage() {
         {selectedShift && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Worker ID</div>
-              <div style={{ fontWeight: '500', fontSize: '1.125rem' }}>{selectedShift.user_id || '—'}</div>
+              <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Worker</div>
+              <div style={{ fontWeight: '500', fontSize: '1.125rem' }}>{selectedShift.worker_name}</div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Status</div>
-                <div style={{ fontWeight: '500' }}>
-                  <span style={{
-                    padding: '0.25rem 0.5rem',
-                    borderRadius: '0.25rem',
-                    fontSize: '0.875rem',
-                    background: selectedShift.status === 'open' ? '#dbeafe' : '#d1fae5',
-                    color: selectedShift.status === 'open' ? '#1e40af' : '#065f46',
-                  }}>
-                    {selectedShift.status === 'open' ? '🟢 Open' : '✅ Closed'}
-                  </span>
-                </div>
+                <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Date</div>
+                <div style={{ fontWeight: '500' }}>{selectedShift.date}</div>
               </div>
               <div>
                 <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Duration</div>
@@ -374,23 +357,16 @@ export default function ShiftsPage() {
               <div>
                 <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Start Time</div>
                 <div style={{ fontWeight: '500' }}>
-                  {formatDateTime(selectedShift.created_at)}
+                  {formatDateTime(selectedShift.start_time)}
                 </div>
               </div>
               <div>
                 <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>End Time</div>
                 <div style={{ fontWeight: '500' }}>
-                  {formatDateTime(selectedShift.ended_at)}
+                  {selectedShift.end_time ? formatDateTime(selectedShift.end_time) : '—'}
                 </div>
               </div>
             </div>
-
-            {selectedShift.work_address && (
-              <div>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Work Address</div>
-                <div style={{ fontWeight: '500' }}>{selectedShift.work_address}</div>
-              </div>
-            )}
 
             {selectedShift.duration_hours && selectedShift.duration_hours > 8 && (
               <div style={{ padding: '1rem', background: '#fef3c7', borderRadius: '0.375rem', marginTop: '0.5rem' }}>

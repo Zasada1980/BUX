@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '../hooks/useApi';
 import { apiClient } from '../lib/apiClient';
 import type { BotMenuResponse, BotCommandConfig, UpdateBotMenuRequest } from '../types';

@@ -64,3 +64,35 @@ class CurrentUserOut(BaseModel):
     """Current user info response."""
     employee: EmployeeOut
     permissions: list[str]  # List of allowed operations
+
+
+class CreateUserRequest(BaseModel):
+    """Create new user with password."""
+    username: str = Field(..., min_length=3, max_length=100)
+    password: str = Field(..., min_length=8, max_length=255)
+    name: str = Field(..., min_length=1, max_length=200)
+    role: str = Field(..., pattern="^(admin|foreman|worker)$")
+    telegram_id: Optional[int] = None
+    telegram_username: Optional[str] = Field(None, max_length=64)
+    phone: Optional[str] = Field(None, max_length=20)
+
+
+class UserCredentialOut(BaseModel):
+    """User credential info (without password)."""
+    id: int
+    employee_id: int
+    username: str
+    name: str
+    role: str
+    active: bool
+    failed_attempts: int
+    locked_until: Optional[datetime]
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+class RevokeTokensRequest(BaseModel):
+    """Revoke all tokens for a user."""
+    employee_id: int
