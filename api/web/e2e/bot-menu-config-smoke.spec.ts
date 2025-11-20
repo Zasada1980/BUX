@@ -32,12 +32,12 @@ test.describe('Scenario 6: Bot Menu Config', () => {
     expect(rowCount).toBeGreaterThan(0);
     console.log(`[F5.3 Bot Menu] Worker tab has ${rowCount} commands`);
 
-    // UX-V2: Work with any available row (first row if only 1-2 commands exist)
-    const testRowIndex = Math.min(1, rowCount - 1); // Use 2nd row if exists, else 1st
+    // Use 3rd row (index 2) for testing — 1st and 2nd are core commands (/start, /end) which cannot be toggled OFF
+    const testRowIndex = Math.min(2, rowCount - 1); // Use 3rd row if exists (non-core command /expense), else last row
     const testRow = table.locator('tbody tr').nth(testRowIndex);
     
-    // UX-V2-B1: StatusChip added, find toggle button using stable selector
-    const toggleButton = testRow.locator('button').filter({ hasText: /Enable|Disable/ }).last();
+    // Find toggle button (unique class combination: h-6 w-11 rounded-full)
+    const toggleButton = testRow.locator('button.rounded-full.h-6.w-11');
     
     // Wait for button to be in DOM with increased timeout
     await toggleButton.waitFor({ state: 'attached', timeout: 10000 });
@@ -82,7 +82,7 @@ test.describe('Scenario 6: Bot Menu Config', () => {
 
     // Check that toggle state persisted (should be opposite of initial)
     const testRowAfterReload = table.locator('tbody tr').nth(testRowIndex);
-    const toggleAfterReload = testRowAfterReload.locator('button').filter({ hasText: /Enable|Disable/ }).last();
+    const toggleAfterReload = testRowAfterReload.locator('button.rounded-full.h-6.w-11');
     await toggleAfterReload.waitFor({ state: 'attached', timeout: 10000 });
     
     const classAfterReload = await toggleAfterReload.getAttribute('class');

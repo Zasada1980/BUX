@@ -1,0 +1,621 @@
+
+> workledger-web@1.0.0 test:e2e
+> playwright test
+
+
+Running 52 tests using 1 worker
+
+[1A[2K[1/52] [chromium] тА║ e2e\auth.spec.js:19:3 тА║ Authentication Flow (LEGACY HTML UI) тА║ should display login page
+[1A[2K[2/52] [chromium] тА║ e2e\auth.spec.js:34:3 тА║ Authentication Flow (LEGACY HTML UI) тА║ should login with valid credentials
+[1A[2K[3/52] [chromium] тА║ e2e\auth.spec.js:69:3 тА║ Authentication Flow (LEGACY HTML UI) тА║ should show error on invalid credentials
+[1A[2K[4/52] [chromium] тА║ e2e\auth.spec.js:84:3 тА║ Authentication Flow (LEGACY HTML UI) тА║ should logout and clear session
+[1A[2K[5/52] [chromium] тА║ e2e\auth.spec.js:121:3 тА║ Authentication Flow (LEGACY HTML UI) тА║ should redirect to login when accessing protected page without auth
+[1A[2K[6/52] [chromium] тА║ e2e\auth.spec.js:128:3 тА║ Authentication Flow (LEGACY HTML UI) тА║ should persist session on page reload
+[1A[2K[7/52] [chromium] тА║ e2e\auth.spec.js:153:3 тА║ Authentication Flow (LEGACY HTML UI) тА║ should handle token refresh on API 401
+[1A[2K[8/52] [chromium] тА║ e2e\bot-menu-config-smoke.spec.ts:6:3 тА║ Scenario 6: Bot Menu Config тА║ should toggle command enabled state and persist after reload
+[1A[2K[chromium] тА║ e2e\bot-menu-config-smoke.spec.ts:6:3 тА║ Scenario 6: Bot Menu Config тА║ should toggle command enabled state and persist after reload
+[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/auth/login'[39m,
+  method: [32m'POST'[39m,
+  authHeader: [32m'тЭМ Missing'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/auth/login'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[E2E AUTH STATE] {
+  hasToken: [32m'тЬЕ'[39m,
+  tokenPreview: [32m'eyJhbGciOiJIUzI1NiIsInR5cCI6Ik'[39m,
+  hasUser: [32m'тЬЕ'[39m,
+  userName: [32m'Admin User'[39m,
+  userRole: [32m'admin'[39m,
+  storageType: [32m'sessionStorage'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/admin/bot-menu'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/admin/bot-menu'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/admin/bot-menu'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/admin/bot-menu'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[F5.3 Bot Menu] Worker tab has 3 commands
+
+[1A[2K  1) [chromium] тА║ e2e\bot-menu-config-smoke.spec.ts:6:3 тА║ Scenario 6: Bot Menu Config тА║ should toggle command enabled state and persist after reload 
+
+    TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('table').locator('tbody tr').nth(1).locator('button').filter({ hasText: /Enable|Disable/ }).last()[22m
+
+
+      41 |     
+      42 |     // Wait for button to be in DOM with increased timeout
+    > 43 |     await toggleButton.waitFor({ state: 'attached', timeout: 10000 });
+         |                        ^
+      44 |     
+      45 |     // Get initial state (enabled by default from seed data)
+      46 |     const initialClass = await toggleButton.getAttribute('class');
+        at D:\TelegramOllama_ENV_DEMO\code\api\web\e2e\bot-menu-config-smoke.spec.ts:43:24
+
+    attachment #1: screenshot (image/png) тФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФА
+    test-results\bot-menu-config-smoke-Scen-acf9a-te-and-persist-after-reload-chromium\test-failed-1.png
+    тФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФАтФА
+
+    Error Context: test-results\bot-menu-config-smoke-Scen-acf9a-te-and-persist-after-reload-chromium\error-context.md
+
+
+[1A[2K[9/52] [chromium] тА║ e2e\dashboard-overview.spec.ts:5:3 тА║ Scenario 7: Dashboard Overview тА║ should display dashboard KPIs and respond to period filter
+[1A[2K[10/52] [chromium] тА║ e2e\employees.spec.js:34:3 тА║ Employee Management (LEGACY HTML UI) тА║ should display employee list
+[1A[2K[11/52] [chromium] тА║ e2e\employees.spec.js:45:3 тА║ Employee Management (LEGACY HTML UI) тА║ should create new employee
+[1A[2K[12/52] [chromium] тА║ e2e\employees.spec.js:76:3 тА║ Employee Management (LEGACY HTML UI) тА║ should view employee details
+[1A[2K[13/52] [chromium] тА║ e2e\employees.spec.js:88:3 тА║ Employee Management (LEGACY HTML UI) тА║ should update employee information
+[1A[2K[14/52] [chromium] тА║ e2e\employees.spec.js:122:3 тА║ Employee Management (LEGACY HTML UI) тА║ should deactivate employee
+[1A[2K[15/52] [chromium] тА║ e2e\employees.spec.js:156:3 тА║ Employee Management (LEGACY HTML UI) тА║ should filter employees by role
+[1A[2K[16/52] [chromium] тА║ e2e\employees.spec.js:175:3 тА║ Employee Management (LEGACY HTML UI) тА║ should validate duplicate telegram_id
+[1A[2K[17/52] [chromium] тА║ e2e\employees.spec.js:199:3 тА║ Employee Management (LEGACY HTML UI) тА║ should paginate employee list
+[1A[2K[18/52] [chromium] тА║ e2e\expenses-filter-csv.spec.ts:15:3 тА║ Scenario 3: Expense Filtering + CSV Export тА║ should filter expenses and export to CSV
+[1A[2K[chromium] тА║ e2e\expenses-filter-csv.spec.ts:15:3 тА║ Scenario 3: Expense Filtering + CSV Export тА║ should filter expenses and export to CSV
+[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/auth/login'[39m,
+  method: [32m'POST'[39m,
+  authHeader: [32m'тЭМ Missing'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/auth/login'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[E2E AUTH STATE] {
+  hasToken: [32m'тЬЕ'[39m,
+  tokenPreview: [32m'eyJhbGciOiJIUzI1NiIsInR5cCI6Ik'[39m,
+  hasUser: [32m'тЬЕ'[39m,
+  userName: [32m'Admin User'[39m,
+  userRole: [32m'admin'[39m,
+  storageType: [32m'sessionStorage'[39m
+}
+
+[1A[2K[F4.3.4 PRE-BACKEND-FIX] Auth verified: {
+  hasToken: [33mtrue[39m,
+  userName: [32m'Admin User'[39m,
+  storageType: [32m'sessionStorage'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/expenses?page=1&limit=20'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/expenses?page=1&limit=20'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/expenses?page=1&limit=20'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[F4.4 NETWORK] Expenses API response: {
+  status: [33m200[39m,
+  statusText: [32m'OK'[39m,
+  url: [32m'http://localhost:3000/api/expenses?page=1&limit=20'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/expenses?page=1&limit=20'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/expenses?page=1&limit=20&date_from=2025-10-21'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/expenses?page=1&limit=20&date_from=2025-10-21&date_to=2025-11-20'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/expenses?page=1&limit=20&date_from=2025-10-21'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/expenses?page=1&limit=20&date_from=2025-10-21&date_to=2025-11-20'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/expenses/export?date_from=2025-10-21&date_to=2025-11-20'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/expenses/export?date_from=2025-10-21&date_to=2025-11-20'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[F4.5 CSV Export] Downloaded file: expenses_20251120T194522.csv
+
+[1A[2K[F4.5 CSV Export] File size: [33m452[39m bytes
+
+[1A[2K[F4.3.4 PRE-BACKEND-FIX] Network logs summary: {
+  totalRequests: [33m6[39m,
+  totalResponses: [33m6[39m,
+  unauthorizedResponses: [33m0[39m,
+  forbiddenResponses: [33m0[39m
+}
+
+[1A[2K[19/52] [chromium] тА║ e2e\form-html-debug.spec.ts:3:1 тА║ Extract full form HTML
+[1A[2K[chromium] тА║ e2e\form-html-debug.spec.ts:3:1 тА║ Extract full form HTML
+=== FORM HTML ===
+
+[1A[2K<div class="form-group"><label for="username">Username or Telegram ID</label><input id="username" name="username" type="text" required="" minlength="3" autocomplete="username" value=""></div><div class="form-group"><label for="password">Password</label><input id="password" name="password" type="password" required="" minlength="6" autocomplete="current-password" value=""></div><div class="form-group-checkbox"><input id="rememberMe" type="checkbox"><label for="rememberMe">Remember me (7 days)</label></div><button type="submit" class="login-btn">Login</button><p class="help-text">Forgot password? Contact admin</p>
+
+[1A[2K=== CLASS INFO ===
+
+[1A[2K{
+  "formClasses": "login-form",
+  "computedDisplay": "flex",
+  "allStylesheets": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ]
+}
+
+[1A[2K[20/52] [chromium] тА║ e2e\inbox-bulk-approve.spec.ts:14:3 тА║ Scenario 1: Inbox Bulk Approve тА║ should approve multiple pending items in bulk
+[1A[2K[chromium] тА║ e2e\inbox-bulk-approve.spec.ts:14:3 тА║ Scenario 1: Inbox Bulk Approve тА║ should approve multiple pending items in bulk
+[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/auth/login'[39m,
+  method: [32m'POST'[39m,
+  authHeader: [32m'тЭМ Missing'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/auth/login'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[E2E AUTH STATE] {
+  hasToken: [32m'тЬЕ'[39m,
+  tokenPreview: [32m'eyJhbGciOiJIUzI1NiIsInR5cCI6Ik'[39m,
+  hasUser: [32m'тЬЕ'[39m,
+  userName: [32m'Admin User'[39m,
+  userRole: [32m'admin'[39m,
+  storageType: [32m'sessionStorage'[39m
+}
+
+[1A[2K[F4.4 AUTH] { hasToken: [33mtrue[39m, user: [32m'Admin User'[39m }
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/admin/pending?page=1&limit=20'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/admin/pending?page=1&limit=20'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/admin/pending?page=1&limit=20'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[F4.4 NETWORK] {
+  url: [32m'http://localhost:3000/api/admin/pending?page=1&limit=20'[39m,
+  status: [33m200[39m,
+  statusText: [32m'OK'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/admin/pending?page=1&limit=20'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[21/52] [chromium] тА║ e2e\invoices-review-csv.spec.ts:14:3 тА║ Scenario 4: Invoice Review + CSV Export тА║ should review invoice and export to CSV
+[1A[2K[chromium] тА║ e2e\invoices-review-csv.spec.ts:14:3 тА║ Scenario 4: Invoice Review + CSV Export тА║ should review invoice and export to CSV
+[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/auth/login'[39m,
+  method: [32m'POST'[39m,
+  authHeader: [32m'тЭМ Missing'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/auth/login'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[E2E AUTH STATE] {
+  hasToken: [32m'тЬЕ'[39m,
+  tokenPreview: [32m'eyJhbGciOiJIUzI1NiIsInR5cCI6Ik'[39m,
+  hasUser: [32m'тЬЕ'[39m,
+  userName: [32m'Admin User'[39m,
+  userRole: [32m'admin'[39m,
+  storageType: [32m'sessionStorage'[39m
+}
+
+[1A[2K[F4.4 AUTH] { hasToken: [33mtrue[39m, user: [32m'Admin User'[39m }
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/invoices?page=1&limit=20'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/invoices?page=1&limit=20'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/invoices?page=1&limit=20'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/invoices?page=1&limit=20'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[F4.4 NETWORK] {
+  url: [32m'http://localhost:3000/api/invoices?page=1&limit=20'[39m,
+  status: [33m200[39m,
+  statusText: [32m'OK'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/invoices/export'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/invoices/export'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[F4.5 CSV Export] Downloaded file: invoices_20251120T194531.csv
+
+[1A[2K[F4.5 CSV Export] File size: [33m397[39m bytes
+
+[1A[2K[22/52] [chromium] тА║ e2e\invoices.spec.js:26:3 тА║ Invoice Management (LEGACY HTML UI) тА║ should navigate to invoices page
+[1A[2K[23/52] [chromium] тА║ e2e\invoices.spec.js:41:3 тА║ Invoice Management (LEGACY HTML UI) тА║ should display invoice list
+[1A[2K[24/52] [chromium] тА║ e2e\invoices.spec.js:51:3 тА║ Invoice Management (LEGACY HTML UI) тА║ should create new invoice
+[1A[2K[25/52] [chromium] тА║ e2e\invoices.spec.js:85:3 тА║ Invoice Management (LEGACY HTML UI) тА║ should preview invoice before approval
+[1A[2K[26/52] [chromium] тА║ e2e\invoices.spec.js:109:3 тА║ Invoice Management (LEGACY HTML UI) тА║ should approve invoice
+[1A[2K[27/52] [chromium] тА║ e2e\invoices.spec.js:134:3 тА║ Invoice Management (LEGACY HTML UI) тА║ should reject invoice
+[1A[2K[28/52] [chromium] тА║ e2e\invoices.spec.js:160:3 тА║ Invoice Management (LEGACY HTML UI) тА║ should export invoice as PDF
+[1A[2K[29/52] [chromium] тА║ e2e\invoices.spec.js:192:3 тА║ Invoice Management (LEGACY HTML UI) тА║ should filter invoices by status
+[1A[2K[30/52] [chromium] тА║ e2e\invoices.spec.js:217:3 тА║ Invoice Management (LEGACY HTML UI) тА║ should view invoice versions/history
+[1A[2K[31/52] [chromium] тА║ e2e\login-debug.spec.ts:4:3 тА║ Login Debug тА║ should debug login page rendering
+[1A[2K[chromium] тА║ e2e\login-debug.spec.ts:4:3 тА║ Login Debug тА║ should debug login page rendering
+[BROWSER] debug [vite] connecting...
+
+[1A[2K[BROWSER] debug [vite] connected.
+
+[1A[2K[BROWSER] info %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+
+[1A[2K[BROWSER] warning тЪая╕П React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+
+[1A[2K[BROWSER] warning тЪая╕П React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[1A[2KUsername input count: [33m1[39m
+
+[1A[2KPassword input count: [33m1[39m
+
+[1A[2KUsername visible: [33mtrue[39m
+
+[1A[2KPassword visible: [33mtrue[39m
+
+[1A[2KUsername input styles: {
+  "display": "block",
+  "visibility": "visible",
+  "opacity": "1",
+  "width": "340px",
+  "height": "39px"
+}
+
+[1A[2KBody HTML length: [33m998[39m
+
+[1A[2K[32/52] [chromium] тА║ e2e\parent-debug.spec.ts:3:1 тА║ Check parent visibility
+[1A[2K[chromium] тА║ e2e\parent-debug.spec.ts:3:1 тА║ Check parent visibility
+Parent chain: [
+  {
+    "tag": "INPUT",
+    "class": "",
+    "display": "block",
+    "visibility": "visible",
+    "opacity": "1",
+    "height": "39px",
+    "overflow": "clip"
+  },
+  {
+    "tag": "DIV",
+    "class": "form-group",
+    "display": "flex",
+    "visibility": "visible",
+    "opacity": "1",
+    "height": "69.7969px",
+    "overflow": "visible"
+  },
+  {
+    "tag": "FORM",
+    "class": "login-form",
+    "display": "flex",
+    "visibility": "visible",
+    "opacity": "1",
+    "height": "311.203px",
+    "overflow": "visible"
+  },
+  {
+    "tag": "DIV",
+    "class": "login-container",
+    "display": "block",
+    "visibility": "visible",
+    "opacity": "1",
+    "height": "590.391px",
+    "overflow": "visible"
+  },
+  {
+    "tag": "DIV",
+    "class": "login-page",
+    "display": "flex",
+    "visibility": "visible",
+    "opacity": "1",
+    "height": "720px",
+    "overflow": "visible"
+  },
+  {
+    "tag": "DIV",
+    "class": "",
+    "display": "block",
+    "visibility": "visible",
+    "opacity": "1",
+    "height": "720px",
+    "overflow": "visible"
+  }
+]
+
+[1A[2K[33/52] [chromium] тА║ e2e\profile-password-change.spec.ts:9:3 тА║ Scenario 9: Profile & Password Change (Full Functionality) тА║ should display profile information
+[1A[2K[34/52] [chromium] тА║ e2e\profile-password-change.spec.ts:25:3 тА║ Scenario 9: Profile & Password Change (Full Functionality) тА║ should change password successfully
+[1A[2K[35/52] [chromium] тА║ e2e\profile-password-change.spec.ts:55:3 тА║ Scenario 9: Profile & Password Change (Full Functionality) тА║ should validate password requirements
+[1A[2K[36/52] [chromium] тА║ e2e\profile-password-change.spec.ts:73:3 тА║ Scenario 9: Profile & Password Change (Full Functionality) тА║ should validate password confirmation match
+[1A[2K[37/52] [chromium] тА║ e2e\profile-password-change.spec.ts:88:3 тА║ Scenario 9: Profile & Password Change (Full Functionality) тА║ should handle incorrect current password
+[1A[2K[38/52] [chromium] тА║ e2e\profile-password-change.spec.ts:103:3 тА║ Scenario 9: Profile & Password Change (Full Functionality) тА║ should handle empty form submission
+[1A[2K[39/52] [chromium] тА║ e2e\settings-smoke.spec.ts:5:3 тА║ Scenario 8: Settings Management тА║ should load Settings page with General tab
+[1A[2K[chromium] тА║ e2e\settings-smoke.spec.ts:5:3 тА║ Scenario 8: Settings Management тА║ should load Settings page with General tab
+[F4.5 CONSOLE DUMP] Total messages: [33m10[39m
+
+[1A[2K[F4.5 CONSOLE 0] [debug] [vite] connecting...
+
+[1A[2K[F4.5 CONSOLE 1] [debug] [vite] connected.
+
+[1A[2K[F4.5 CONSOLE 2] [info] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+
+[1A[2K[F4.5 CONSOLE 3] [warning] тЪая╕П React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+
+[1A[2K[F4.5 CONSOLE 4] [warning] тЪая╕П React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[1A[2K[F4.5 CONSOLE 5] [debug] [vite] connecting...
+
+[1A[2K[F4.5 CONSOLE 6] [debug] [vite] connected.
+
+[1A[2K[F4.5 CONSOLE 7] [info] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+
+[1A[2K[F4.5 CONSOLE 8] [warning] тЪая╕П React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+
+[1A[2K[F4.5 CONSOLE 9] [warning] тЪая╕П React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[1A[2K[F4.5 Settings] General tab verification: PASS
+
+[1A[2K[40/52] [chromium] тА║ e2e\shift-review-smoke.spec.ts:6:3 тА║ Scenario 5: Shift Review тА║ should load Shifts page with table and data
+[1A[2K[chromium] тА║ e2e\shift-review-smoke.spec.ts:6:3 тА║ Scenario 5: Shift Review тА║ should load Shifts page with table and data
+[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/auth/login'[39m,
+  method: [32m'POST'[39m,
+  authHeader: [32m'тЭМ Missing'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/auth/login'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[E2E AUTH STATE] {
+  hasToken: [32m'тЬЕ'[39m,
+  tokenPreview: [32m'eyJhbGciOiJIUzI1NiIsInR5cCI6Ik'[39m,
+  hasUser: [32m'тЬЕ'[39m,
+  userName: [32m'Admin User'[39m,
+  userRole: [32m'admin'[39m,
+  storageType: [32m'sessionStorage'[39m
+}
+
+[1A[2K[F5.2 Shifts] Auth verified: {
+  hasToken: [33mtrue[39m,
+  userName: [32m'Admin User'[39m,
+  storageType: [32m'sessionStorage'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/shifts?'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E REQUEST] {
+  url: [32m'http://localhost:3000/api/shifts?'[39m,
+  method: [32m'GET'[39m,
+  authHeader: [32m'тЬЕ Present'[39m,
+  adminSecret: [32m'тЭМ Missing'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/shifts?'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[E2E RESPONSE] {
+  url: [32m'http://localhost:3000/api/shifts?'[39m,
+  status: [33m200[39m,
+  statusText: [32m'тЬЕ OK'[39m
+}
+
+[1A[2K[F5.2 Shifts] тЬЕ PASS тАФ Table visible with 3 shifts
+
+[1A[2K[41/52] [chromium] тА║ e2e\user-management-smoke.spec.ts:38:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should create a new user successfully
+[1A[2K[chromium] тА║ e2e\user-management-smoke.spec.ts:38:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should create a new user successfully
+тЬЕ Admin fixed: id=1, role=admin, active=1
+
+
+[1A[2Kdemo_api
+
+
+[1A[2K[E2E Test] Creating user with username: testworker_1763667953288, name: Test Worker E2E 1763667953288
+
+[1A[2K[E2E Test] Form filled, clicking Create User button...
+
+[1A[2K[E2E Test] тЬЕ User created and visible in table
+
+[1A[2K[42/52] [chromium] тА║ e2e\user-management-smoke.spec.ts:79:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should edit user role successfully
+[1A[2K[chromium] тА║ e2e\user-management-smoke.spec.ts:79:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should edit user role successfully
+тЬЕ Admin fixed: id=1, role=admin, active=1
+
+
+[1A[2Kdemo_api
+
+
+[1A[2K[43/52] [chromium] тА║ e2e\user-management-smoke.spec.ts:108:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should deactivate and activate user successfully
+[1A[2K[chromium] тА║ e2e\user-management-smoke.spec.ts:108:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should deactivate and activate user successfully
+тЬЕ Admin fixed: id=1, role=admin, active=1
+
+
+[1A[2Kdemo_api
+
+
+[1A[2K[44/52] [chromium] тА║ e2e\user-management-smoke.spec.ts:143:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should handle validation errors on create
+[1A[2K[chromium] тА║ e2e\user-management-smoke.spec.ts:143:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should handle validation errors on create
+тЬЕ Admin fixed: id=1, role=admin, active=1
+
+
+[1A[2Kdemo_api
+
+
+[1A[2K[45/52] [chromium] тА║ e2e\user-management-smoke.spec.ts:162:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should export users to CSV
+[1A[2K[chromium] тА║ e2e\user-management-smoke.spec.ts:162:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should export users to CSV
+тЬЕ Admin fixed: id=1, role=admin, active=1
+
+
+[1A[2Kdemo_api
+
+
+[1A[2K[46/52] [chromium] тА║ e2e\user-management-smoke.spec.ts:180:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should handle empty state gracefully
+[1A[2K[chromium] тА║ e2e\user-management-smoke.spec.ts:180:3 тА║ Scenario 2: User Management (Full CRUD) тА║ should handle empty state gracefully
+тЬЕ Admin fixed: id=1, role=admin, active=1
+
+
+[1A[2Kdemo_api
+
+
+[1A[2K[47/52] [chromium] тА║ e2e\work-records.spec.js:25:3 тА║ Work Records Management (LEGACY HTML UI) тА║ should display work records dashboard
+[1A[2K[48/52] [chromium] тА║ e2e\work-records.spec.js:34:3 тА║ Work Records Management (LEGACY HTML UI) тА║ should start work shift
+[1A[2K[49/52] [chromium] тА║ e2e\work-records.spec.js:55:3 тА║ Work Records Management (LEGACY HTML UI) тА║ should log task during shift
+[1A[2K[50/52] [chromium] тА║ e2e\work-records.spec.js:85:3 тА║ Work Records Management (LEGACY HTML UI) тА║ should record expense during shift
+[1A[2K[51/52] [chromium] тА║ e2e\work-records.spec.js:116:3 тА║ Work Records Management (LEGACY HTML UI) тА║ should end work shift
+[1A[2K[52/52] [chromium] тА║ e2e\work-records.spec.js:144:3 тА║ Work Records Management (LEGACY HTML UI) тА║ should view shift history
+[1A[2K  1 failed
+    [chromium] тА║ e2e\bot-menu-config-smoke.spec.ts:6:3 тА║ Scenario 6: Bot Menu Config тА║ should toggle command enabled state and persist after reload 
+  30 skipped
+  21 passed (1.2m)
+
+[36m  Serving HTML report at http://localhost:9323. Press Ctrl+C to quit.[39m
