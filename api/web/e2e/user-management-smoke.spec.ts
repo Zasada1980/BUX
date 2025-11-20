@@ -83,8 +83,9 @@ test.describe('Scenario 2: User Management (Full CRUD)', () => {
     // UX-V2: Wait for table to load first
     await page.waitForSelector('table tbody tr', { timeout: 10000 });
 
-    // Find first "Edit" button in table and click it
-    const editButton = page.locator('button:has-text("Edit")').first();
+    // CI11 FIX: Edit SECOND user (not admin) to avoid losing admin rights
+    // First user in table is always Admin User (id=1), skip it
+    const editButton = page.locator('button:has-text("Edit")').nth(1);  // nth(1) = second button
     await expect(editButton).toBeVisible();
     await editButton.click();
 
@@ -108,8 +109,9 @@ test.describe('Scenario 2: User Management (Full CRUD)', () => {
     await page.goto('/users');
     await page.waitForSelector('h1:has-text("Users")', { timeout: 5000 });
 
-    // Find first "Deactivate" button (active user)
-    const deactivateButton = page.locator('button:has-text("Deactivate")').first();
+    // CI11 FIX: Deactivate SECOND user (not admin) to avoid losing admin access
+    // First "Deactivate" button is for Admin User (id=1), skip it
+    const deactivateButton = page.locator('button:has-text("Deactivate")').nth(1);  // nth(1) = second button
     
     if (await deactivateButton.isVisible()) {
       // UX-V2-D1: Use page.once() to avoid double handling
@@ -124,8 +126,8 @@ test.describe('Scenario 2: User Management (Full CRUD)', () => {
       await page.reload();
       await page.waitForSelector('h1:has-text("Users")', { timeout: 5000 });
 
-      // Now find "Activate" button for same user
-      const activateButton = page.locator('button:has-text("Activate")').first();
+      // CI11 FIX: Find SECOND "Activate" button (same user we deactivated)
+      const activateButton = page.locator('button:has-text("Activate")').nth(1);  // nth(1) = second button
       
       if (await activateButton.isVisible()) {
         // UX-V2-D1: Use page.once() for second dialog
