@@ -26,6 +26,31 @@ def seed_minimal():
     print(f"🌱 Seeding minimal E2E data to {DB_PATH}...")
 
     # ═══════════════════════════════════════════════════════════════════
+    # 0. Create tables if not exist (for E2E compatibility)
+    # ═══════════════════════════════════════════════════════════════════
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER UNIQUE,
+            telegram_username TEXT,
+            name TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'worker',
+            active INTEGER NOT NULL DEFAULT 1
+        )
+    """)
+    
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS auth_credentials (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            employee_id INTEGER NOT NULL,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            failed_attempts INTEGER DEFAULT 0,
+            FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
+
+    # ═══════════════════════════════════════════════════════════════════
     # 1. Users (table: users, NOT employees!)
     # ═══════════════════════════════════════════════════════════════════
     print("  📝 Creating users...")
