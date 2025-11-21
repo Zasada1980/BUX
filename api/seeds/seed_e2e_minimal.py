@@ -34,17 +34,17 @@ def seed_minimal():
     cur.execute("DELETE FROM users")
     cur.execute("DELETE FROM auth_credentials")
 
-    # Insert users (schema: id, telegram_id, telegram_username, name, role, active)
+    # Insert users (schema matches migration d0d215bdd858: id, telegram_id, name, role, active)
     users_data = [
-        (1, 999999, "admin", "Admin User", "admin", 1),
-        (2, 111111, "user1", "User One", "worker", 1),
-        (3, 222222, "user2", "User Two", "foreman", 1),
-        (4, 333333, "user3", "User Inactive", "worker", 0),
+        (1, 999999, "Admin User", "admin", 1),
+        (2, 111111, "User One", "worker", 1),
+        (3, 222222, "User Two", "foreman", 1),
+        (4, 333333, "User Inactive", "worker", 0),
     ]
 
     cur.executemany("""
-        INSERT INTO users (id, telegram_id, telegram_username, name, role, active)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO users (id, telegram_id, name, role, active)
+        VALUES (?, ?, ?, ?, ?)
     """, users_data)
 
     print(f"    ✅ {len(users_data)} users created")
