@@ -26,9 +26,47 @@ def seed_minimal():
     print(f"🌱 Seeding minimal E2E data to {DB_PATH}...")
 
     # ═══════════════════════════════════════════════════════════════════
-    # NOTE: Tables are created by Alembic migrations (alembic upgrade head).
-    # This seed script ONLY inserts test data into existing tables.
+    # NOTE: Most tables created by Alembic (alembic upgrade head).
+    # EXCEPTION: users/auth_credentials NOT in migrations (TD-AUTH-SCHEMA-1)
     # ═══════════════════════════════════════════════════════════════════
+    
+    # HACK: Create users/auth_credentials tables (NOT in migrations!)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER UNIQUE,
+            name TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'worker',
+            active INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS auth_credentials (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            employee_id INTEGER NOT NULL,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            failed_attempts INTEGER DEFAULT 0,
+            locked_until TEXT,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
+    
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS refresh_tokens (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            employee_id INTEGER NOT NULL,
+            token TEXT UNIQUE NOT NULL,
+            expires_at TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
 
     # ═══════════════════════════════════════════════════════════════════
     # 1. Users (table: users, NOT employees!)
@@ -39,7 +77,7 @@ def seed_minimal():
     cur.execute("DELETE FROM users")
     cur.execute("DELETE FROM auth_credentials")
 
-    # Insert users (schema: id, telegram_id, name, role, active, created_at, updated_at)
+    # Insert users (schema: id, telegram_id, name, role, active)
     users_data = [
         (1, 999999, "Admin User", "admin", 1),
         (2, 111111, "User One", "worker", 1),
