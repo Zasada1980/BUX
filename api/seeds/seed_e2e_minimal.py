@@ -113,19 +113,22 @@ def seed_minimal():
     # ═══════════════════════════════════════════════════════════════════
     # 4. Shifts (for shifts-review-smoke tests)
     # ═══════════════════════════════════════════════════════════════════
+    # 4. Shifts (minimal for E2E tests)
+    # ═══════════════════════════════════════════════════════════════════
     print("  📝 Creating shifts...")
 
     cur.execute("DELETE FROM shifts")
 
+    # Real schema: id, user_id, status, created_at, ended_at
     shifts_data = [
-        (1, "111111", None, "Test Address 1", "completed", "2025-11-20 08:00:00", "2025-11-20 17:00:00"),
-        (2, "222222", None, "Test Address 2", "open", "2025-11-21 09:00:00", None),
-        (3, "111111", None, "Test Address 3", "cancelled", "2025-11-19 10:00:00", "2025-11-19 12:00:00"),
+        (1, "111111", "completed", "2025-11-20 08:00:00", "2025-11-20 17:00:00"),
+        (2, "222222", "open", "2025-11-21 09:00:00", None),
+        (3, "111111", "open", "2025-11-19 10:00:00", None),
     ]
 
     cur.executemany("""
-        INSERT INTO shifts (id, user_id, client_id, work_address, status, created_at, ended_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO shifts (id, user_id, status, created_at, ended_at)
+        VALUES (?, ?, ?, ?, ?)
     """, shifts_data)
 
     print(f"    ✅ {len(shifts_data)} shifts created")
