@@ -26,34 +26,9 @@ def seed_minimal():
     print(f"🌱 Seeding minimal E2E data to {DB_PATH}...")
 
     # ═══════════════════════════════════════════════════════════════════
-    # 0. Create tables if not exist (for E2E compatibility)
+    # NOTE: Tables are created by Alembic migrations (alembic upgrade head).
+    # This seed script ONLY inserts test data into existing tables.
     # ═══════════════════════════════════════════════════════════════════
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            telegram_id INTEGER UNIQUE,
-            telegram_username TEXT,
-            name TEXT NOT NULL,
-            role TEXT NOT NULL DEFAULT 'worker',
-            active INTEGER NOT NULL DEFAULT 1,
-            created_at TEXT DEFAULT (datetime('now')),
-            updated_at TEXT DEFAULT (datetime('now'))
-        )
-    """)
-    
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS auth_credentials (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            employee_id INTEGER NOT NULL,
-            username TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
-            failed_attempts INTEGER DEFAULT 0,
-            locked_until TEXT,
-            created_at TEXT DEFAULT (datetime('now')),
-            updated_at TEXT DEFAULT (datetime('now')),
-            FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE CASCADE
-        )
-    """)
 
     # ═══════════════════════════════════════════════════════════════════
     # 1. Users (table: users, NOT employees!)
@@ -64,17 +39,17 @@ def seed_minimal():
     cur.execute("DELETE FROM users")
     cur.execute("DELETE FROM auth_credentials")
 
-    # Insert users (schema: id, telegram_id, telegram_username, name, role, active)
+    # Insert users (schema: id, telegram_id, name, role, active, created_at, updated_at)
     users_data = [
-        (1, 999999, "admin", "Admin User", "admin", 1),
-        (2, 111111, "user1", "User One", "worker", 1),
-        (3, 222222, "user2", "User Two", "foreman", 1),
-        (4, 333333, "user3", "User Inactive", "worker", 0),
+        (1, 999999, "Admin User", "admin", 1),
+        (2, 111111, "User One", "worker", 1),
+        (3, 222222, "User Two", "foreman", 1),
+        (4, 333333, "User Inactive", "worker", 0),
     ]
 
     cur.executemany("""
-        INSERT INTO users (id, telegram_id, telegram_username, name, role, active)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO users (id, telegram_id, name, role, active)
+        VALUES (?, ?, ?, ?, ?)
     """, users_data)
 
     print(f"    ✅ {len(users_data)} users created")
