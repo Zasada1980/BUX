@@ -134,14 +134,14 @@ def seed_minimal():
     cur.execute("DELETE FROM invoices")
 
     invoices_data = [
-        (1, "client1", "2025-11-01", "2025-11-15", "1500.00", "ILS", "draft", 1, None, None, 1, "2025-11-20 09:00:00"),
-        (2, "client2", "2025-11-01", "2025-11-15", "2000.00", "ILS", "sent", 1, None, None, 1, "2025-11-19 10:00:00"),
-        (3, "client1", "2025-11-16", "2025-11-30", "1800.00", "ILS", "paid", 1, None, None, 1, "2025-11-18 11:00:00"),
+        (1, "client1", "2025-11-01", "2025-11-15", "1500.00", "ILS", "draft", 1, None, None, "2025-11-20 09:00:00"),
+        (2, "client2", "2025-11-01", "2025-11-15", "2000.00", "ILS", "sent", 1, None, None, "2025-11-19 10:00:00"),
+        (3, "client1", "2025-11-16", "2025-11-30", "1800.00", "ILS", "paid", 1, None, None, "2025-11-18 11:00:00"),
     ]
 
     cur.executemany("""
-        INSERT INTO invoices (id, client_id, period_from, period_to, total, currency, status, version, pdf_path, xlsx_path, current_version, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO invoices (id, client_id, period_from, period_to, total, currency, status, version, pdf_path, xlsx_path, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, invoices_data)
 
     print(f"    ✅ {len(invoices_data)} invoices created")
