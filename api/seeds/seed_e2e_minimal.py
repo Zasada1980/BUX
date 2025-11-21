@@ -46,6 +46,9 @@ def seed_minimal():
             username TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
             failed_attempts INTEGER DEFAULT 0,
+            locked_until TEXT,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now')),
             FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE CASCADE
         )
     """)
