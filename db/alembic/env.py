@@ -26,8 +26,8 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# Docker mount: all API files are in /app root (not /app/api)
-import models
+# Import from api package for cross-environment compatibility (Docker + GitHub Actions CI)
+from api import models
 target_metadata = models.Base.metadata
 
 # Allow override via ALEMBIC_URL env var
