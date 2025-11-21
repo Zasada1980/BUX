@@ -26,8 +26,11 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# Import from api package for cross-environment compatibility (Docker + GitHub Actions CI)
-from api import models
+# Multi-environment import: try 'from api import models' (CI with symlink), fallback to 'import models' (Docker)
+try:
+    from api import models
+except ModuleNotFoundError:
+    import models  # type: ignore
 target_metadata = models.Base.metadata
 
 # Allow override via ALEMBIC_URL env var
