@@ -93,14 +93,14 @@ def seed_minimal():
     cur.execute("DELETE FROM shifts")
 
     shifts_data = [
-        (1, "111111", "Test Address 1", "completed", "2025-11-20 08:00:00", "2025-11-20 17:00:00"),
-        (2, "222222", "Test Address 2", "open", "2025-11-21 09:00:00", None),
-        (3, "111111", "Test Address 3", "cancelled", "2025-11-19 10:00:00", "2025-11-19 12:00:00"),
+        (1, "111111", "completed", "2025-11-20 08:00:00"),
+        (2, "222222", "open", "2025-11-21 09:00:00"),
+        (3, "111111", "cancelled", "2025-11-19 10:00:00"),
     ]
 
     cur.executemany("""
-        INSERT INTO shifts (id, user_id, work_address, status, created_at, ended_at)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO shifts (id, user_id, status, created_at)
+        VALUES (?, ?, ?, ?)
     """, shifts_data)
 
     print(f"    ✅ {len(shifts_data)} shifts created")
