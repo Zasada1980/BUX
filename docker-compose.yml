@@ -30,7 +30,7 @@ services:
     volumes:
       - ./api/data:/app/data
       - ./api:/app:rw
-      - ./db:/app/db:rw
+      - ./db/shifts.db:/app/db/shifts.db:rw
       - ./backups:/app/backups:rw
       - ./alembic.ini:/app/alembic.ini:ro
       - ./templates:/templates:ro

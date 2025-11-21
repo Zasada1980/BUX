@@ -26,8 +26,8 @@ db/**/test_*.db
 *.sqlite
 *.sqlite3
 
-# Keep Alembic migrations
-!db/alembic/
+# Alembic migrations live in api/db/alembic (db/alembic is a junction)
+db/alembic
 
 # ═══════════════════════════════════════════════════════════════
 # Backups & Exports
