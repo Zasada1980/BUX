@@ -40,7 +40,7 @@ jobs:
           alembic upgrade head
         env:
           PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
-          ALEMBIC_URL: sqlite:///${{ github.workspace }}/db/shifts.e2e.db
+          ALEMBIC_URL: sqlite:////${{github.workspace}}/db/shifts.e2e.db
 
       - name: Seed test data
         working-directory: .
@@ -48,8 +48,8 @@ jobs:
           python -m api.seeds.seed_e2e_minimal
         env:
           PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
-          DB_PATH: ${{ github.workspace }}/db/shifts.e2e.db
-          ALEMBIC_URL: sqlite:///${{ github.workspace }}/db/shifts.e2e.db
+          DB_PATH: ${{github.workspace}}/db/shifts.e2e.db
+          ALEMBIC_URL: sqlite:////${{github.workspace}}/db/shifts.e2e.db
 
       - name: Start FastAPI backend
         working-directory: .
@@ -59,7 +59,7 @@ jobs:
           curl -f http://localhost:8188/health || (cat api.log && exit 1)
         env:
           PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
-          DB_PATH: ${{ github.workspace }}/db/shifts.e2e.db
+          DB_PATH: ${{github.workspace}}/db/shifts.e2e.db
           ADMIN_SECRET: test-secret-key
 
       - name: Setup Node.js
