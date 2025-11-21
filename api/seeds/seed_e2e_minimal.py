@@ -26,6 +26,49 @@ def seed_minimal():
     print(f"🌱 Seeding minimal E2E data to {DB_PATH}...")
 
     # ═══════════════════════════════════════════════════════════════════
+    # NOTE: Most tables created by Alembic (alembic upgrade head).
+    # EXCEPTION: users/auth_credentials NOT in migrations (TD-AUTH-SCHEMA-1)
+    # ═══════════════════════════════════════════════════════════════════
+    
+    # HACK: Create users/auth_credentials tables (NOT in migrations!)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER UNIQUE,
+            name TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'worker',
+            active INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS auth_credentials (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            employee_id INTEGER NOT NULL,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            failed_attempts INTEGER DEFAULT 0,
+            locked_until TEXT,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
+    
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS refresh_tokens (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            employee_id INTEGER NOT NULL,
+            token TEXT UNIQUE NOT NULL,
+            expires_at TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
+
+    # ═══════════════════════════════════════════════════════════════════
     # 1. Users (table: users, NOT employees!)
     # ═══════════════════════════════════════════════════════════════════
     print("  📝 Creating users...")
@@ -34,17 +77,17 @@ def seed_minimal():
     cur.execute("DELETE FROM users")
     cur.execute("DELETE FROM auth_credentials")
 
-    # Insert users (schema: id, telegram_id, telegram_username, name, role, active)
+    # Insert users (schema: id, telegram_id, name, role, active)
     users_data = [
-        (1, 999999, "admin", "Admin User", "admin", 1),
-        (2, 111111, "user1", "User One", "worker", 1),
-        (3, 222222, "user2", "User Two", "foreman", 1),
-        (4, 333333, "user3", "User Inactive", "worker", 0),
+        (1, 999999, "Admin User", "admin", 1),
+        (2, 111111, "User One", "worker", 1),
+        (3, 222222, "User Two", "foreman", 1),
+        (4, 333333, "User Inactive", "worker", 0),
     ]
 
     cur.executemany("""
-        INSERT INTO users (id, telegram_id, telegram_username, name, role, active)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO users (id, telegram_id, name, role, active)
+        VALUES (?, ?, ?, ?, ?)
     """, users_data)
 
     print(f"    ✅ {len(users_data)} users created")
@@ -88,19 +131,22 @@ def seed_minimal():
     # ═══════════════════════════════════════════════════════════════════
     # 4. Shifts (for shifts-review-smoke tests)
     # ═══════════════════════════════════════════════════════════════════
+    # 4. Shifts (minimal for E2E tests)
+    # ═══════════════════════════════════════════════════════════════════
     print("  📝 Creating shifts...")
 
     cur.execute("DELETE FROM shifts")
 
+    # Real schema: id, user_id, status, created_at, ended_at
     shifts_data = [
-        (1, "111111", None, "Test Address 1", "completed", "2025-11-20 08:00:00", "2025-11-20 17:00:00"),
-        (2, "222222", None, "Test Address 2", "open", "2025-11-21 09:00:00", None),
-        (3, "111111", None, "Test Address 3", "cancelled", "2025-11-19 10:00:00", "2025-11-19 12:00:00"),
+        (1, "111111", "completed", "2025-11-20 08:00:00", "2025-11-20 17:00:00"),
+        (2, "222222", "open", "2025-11-21 09:00:00", None),
+        (3, "111111", "open", "2025-11-19 10:00:00", None),
     ]
 
     cur.executemany("""
-        INSERT INTO shifts (id, user_id, client_id, work_address, status, created_at, ended_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO shifts (id, user_id, status, created_at, ended_at)
+        VALUES (?, ?, ?, ?, ?)
     """, shifts_data)
 
     print(f"    ✅ {len(shifts_data)} shifts created")
@@ -134,14 +180,14 @@ def seed_minimal():
     cur.execute("DELETE FROM invoices")
 
     invoices_data = [
-        (1, "client1", "2025-11-01", "2025-11-15", "1500.00", "ILS", "draft", 1, None, None, 1, "2025-11-20 09:00:00"),
-        (2, "client2", "2025-11-01", "2025-11-15", "2000.00", "ILS", "sent", 1, None, None, 1, "2025-11-19 10:00:00"),
-        (3, "client1", "2025-11-16", "2025-11-30", "1800.00", "ILS", "paid", 1, None, None, 1, "2025-11-18 11:00:00"),
+        (1, "client1", "2025-11-01", "2025-11-15", "1500.00", "ILS", "draft", 1, None, None, "2025-11-20 09:00:00"),
+        (2, "client2", "2025-11-01", "2025-11-15", "2000.00", "ILS", "sent", 1, None, None, "2025-11-19 10:00:00"),
+        (3, "client1", "2025-11-16", "2025-11-30", "1800.00", "ILS", "paid", 1, None, None, "2025-11-18 11:00:00"),
     ]
 
     cur.executemany("""
-        INSERT INTO invoices (id, client_id, period_from, period_to, total, currency, status, version, pdf_path, xlsx_path, current_version, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO invoices (id, client_id, period_from, period_to, total, currency, status, version, pdf_path, xlsx_path, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, invoices_data)
 
     print(f"    ✅ {len(invoices_data)} invoices created")

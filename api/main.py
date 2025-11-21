@@ -16,6 +16,7 @@ from collections import defaultdict, deque
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 from pathlib import Path
+import sqlite3  # CI-24: Raw DB access for test endpoints
 
 from config import settings
 from db import SessionLocal
@@ -516,6 +517,67 @@ def ocr_health():
         "langs": info.langs,
         "status": "ok" if info.ok else "fail"
     }
+
+
+@app.post("/api/test/reset-admin-role")
+def test_reset_admin_role(
+    admin_secret: str = Header(None, alias="X-Admin-Secret")
+):
+    """
+    E2E test endpoint: Reset admin user (id=1) role to 'admin'.
+    
+    CI-24: Replaces docker exec fix_admin_role.py (works in both CI and local).
+    Protected by IS_TEST_MODE flag and admin secret.
+    Uses raw sqlite3 to bypass SQLAlchemy metadata (users table not in migrations).
+    
+    Returns:
+        User details after reset
+    
+    Raises:
+        HTTPException: 403 if not in test mode or invalid secret
+    """
+    if not settings.IS_TEST_MODE:
+        raise HTTPException(
+            status_code=403,
+            detail="Test endpoints only available when IS_TEST_MODE=true"
+        )
+    
+    if admin_secret != settings.INTERNAL_ADMIN_SECRET:
+        raise HTTPException(
+            status_code=403,
+            detail="Invalid admin secret"
+        )
+    
+    # Use raw SQLite connection (bypasses ORM metadata expectations)
+    # NOTE: users table exists from seed, but NOT in Alembic migrations (TD-AUTH-SCHEMA-1)
+    db_path = settings.DB_PATH.replace("sqlite:///", "")
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    
+    try:
+        # Reset admin user to known state
+        cur.execute("UPDATE users SET role='admin', active=1 WHERE id=1")
+        conn.commit()
+        
+        # Verify and return result
+        cur.execute("SELECT id, name, role, active FROM users WHERE id=1")
+        result = cur.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=500, detail="Admin user not found after reset")
+        
+        return {
+            "status": "ok",
+            "message": "Admin role reset successfully",
+            "user": {
+                "id": result[0],
+                "name": result[1],
+                "role": result[2],
+                "active": bool(result[3])
+            }
+        }
+    finally:
+        conn.close()
 
 
 @app.post("/api/v1/shift/start", response_model=ShiftOut, status_code=201)

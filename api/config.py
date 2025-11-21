@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     INTERNAL_ADMIN_SECRET: str | None = None
     ADMIN_USER_HEADER: str = "X-Admin-User"  # I1: Optional user tracking header
     
+    # Test mode (E2E/CI)
+    IS_TEST_MODE: bool = False  # Enable test-only endpoints (CI-24)
+    
     # OCR settings (Phase 13 Task 4)
     OCR_ENABLED: bool = False
     OCR_TESSERACT_PATH: str | None = None

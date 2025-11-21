@@ -3,21 +3,25 @@ import { loginAsAdmin } from './fixtures/auth';
 
 test.describe('Scenario 2: User Management (Full CRUD)', () => {
   test.beforeEach(async ({ page, context }) => {
-    // CI11 FIX: Force admin role to 'admin' before each test (DB keeps reverting to 'foreman')
-    const { execSync } = await import('child_process');
-    execSync('docker exec demo_api python /app/seeds/fix_admin_role.py', { stdio: 'inherit' });
+    // CI-24: Reset admin role via HTTP endpoint (works in both CI and Docker)
+    const apiUrl = process.env.API_URL || 'http://localhost:8188';
+    const adminSecret = process.env.INTERNAL_ADMIN_SECRET || 'Cmjo4J69wryOHNeknlKhpAtRLgEQ0MDY8uWvifFI';
     
-    // Restart API to clear JWT cache (critical for role change to take effect)
-    execSync('docker restart demo_api', { stdio: 'inherit' });
-    
-    // Wait for API to be healthy (retry up to 10s)
-    for (let i = 0; i < 10; i++) {
-      try {
-        const response = await page.request.get('http://localhost:8188/health');
-        if (response.ok()) break;
-      } catch (e) {
-        await page.waitForTimeout(1000);
+    try {
+      const response = await page.request.post(`${apiUrl}/api/test/reset-admin-role`, {
+        headers: { 'X-Admin-Secret': adminSecret }
+      });
+      
+      if (!response.ok()) {
+        const body = await response.text();
+        throw new Error(`Failed to reset admin role: ${response.status()} - ${body}`);
       }
+      
+      const result = await response.json();
+      console.log(`✅ Admin role reset: ${result.user.name} (role=${result.user.role})`);
+    } catch (error) {
+      console.error(`❌ Admin role reset failed:`, error);
+      throw error;
     }
     
     // Capture console logs and errors

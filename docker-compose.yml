@@ -27,6 +27,7 @@ services:
       - INTERNAL_ADMIN_SECRET=${INTERNAL_ADMIN_SECRET:-change-me}
       - ADMIN_USER_HEADER=${ADMIN_USER_HEADER:-X-Admin-User}
       - ALEMBIC_URL=sqlite:////app/db/shifts.db
+      - IS_TEST_MODE=${IS_TEST_MODE:-false}
     volumes:
       - ./api/data:/app/data
       - ./api:/app:rw

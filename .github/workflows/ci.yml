@@ -1,5 +1,9 @@
 name: CI
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ master ]
@@ -31,10 +35,12 @@ jobs:
         working-directory: .
         run: |
           mkdir -p db
+          ln -s ${{ github.workspace }}/api/db/alembic db/alembic
+          ls -la db/
           alembic upgrade head
         env:
           PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
-          ALEMBIC_URL: sqlite:///db/shifts.e2e.db
+          ALEMBIC_URL: sqlite:///${{github.workspace}}/db/shifts.e2e.db
 
       - name: Seed test data
         working-directory: .
@@ -42,8 +48,8 @@ jobs:
           python -m api.seeds.seed_e2e_minimal
         env:
           PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
-          DB_PATH: db/shifts.e2e.db
-          ALEMBIC_URL: sqlite:///db/shifts.e2e.db
+          DB_PATH: ${{github.workspace}}/db/shifts.e2e.db
+          ALEMBIC_URL: sqlite:///${{github.workspace}}/db/shifts.e2e.db
 
       - name: Start FastAPI backend
         working-directory: .
@@ -53,8 +59,9 @@ jobs:
           curl -f http://localhost:8188/health || (cat api.log && exit 1)
         env:
           PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
-          DB_PATH: db/shifts.e2e.db
-          ADMIN_SECRET: test-secret-key
+          DB_PATH: ${{github.workspace}}/db/shifts.e2e.db
+          INTERNAL_ADMIN_SECRET: test-secret-key
+          IS_TEST_MODE: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -74,6 +81,8 @@ jobs:
         run: npm run test:e2e
         env:
           CI: true
+          INTERNAL_ADMIN_SECRET: test-secret-key
+          API_URL: http://localhost:8188
 
       - name: Upload API logs
         if: failure()
