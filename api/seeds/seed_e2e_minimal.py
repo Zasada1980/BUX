@@ -35,7 +35,9 @@ def seed_minimal():
             telegram_username TEXT,
             name TEXT NOT NULL,
             role TEXT NOT NULL DEFAULT 'worker',
-            active INTEGER NOT NULL DEFAULT 1
+            active INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
         )
     """)
     
