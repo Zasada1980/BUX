@@ -35,6 +35,7 @@ jobs:
         working-directory: .
         run: |
           mkdir -p db
+          ln -s api/db/alembic db/alembic
           alembic upgrade head
         env:
           PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
