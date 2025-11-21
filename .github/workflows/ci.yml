@@ -34,7 +34,7 @@ jobs:
           alembic upgrade head
         env:
           PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
-          DB_PATH: db/shifts.e2e.db
+          ALEMBIC_URL: sqlite:///db/shifts.e2e.db
 
       - name: Seed test data
         working-directory: .
@@ -43,6 +43,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
           DB_PATH: db/shifts.e2e.db
+          ALEMBIC_URL: sqlite:///db/shifts.e2e.db
 
       - name: Start FastAPI backend
         working-directory: .
