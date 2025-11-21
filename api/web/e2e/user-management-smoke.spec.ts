@@ -1,15 +1,31 @@
 import { test, expect } from '@playwright/test';
 import { loginAsAdmin } from './fixtures/auth';
 
+// E2E cloud-safe setup:
+// - Container name can differ between environments (demo_api vs prod_api)
+// - In CI or when Docker is unavailable, silently skip docker-based tweaks
+const E2E_API_CONTAINER = process.env.E2E_API_CONTAINER || 'demo_api';
+const E2E_USE_DOCKER = process.env.E2E_USE_DOCKER !== 'false';
+
 test.describe('Scenario 2: User Management (Full CRUD)', () => {
   test.beforeEach(async ({ page, context }) => {
-    // CI11 FIX: Force admin role to 'admin' before each test (DB keeps reverting to 'foreman')
-    const { execSync } = await import('child_process');
-    execSync('docker exec demo_api python /app/seeds/fix_admin_role.py', { stdio: 'inherit' });
-    
-    // Restart API to clear JWT cache (critical for role change to take effect)
-    execSync('docker restart demo_api', { stdio: 'inherit' });
-    
+    // CI11 FIX (cloud-safe): Try to force admin role via docker when available; otherwise continue
+    try {
+      if (E2E_USE_DOCKER) {
+        const { execSync } = await import('child_process');
+        // Try to run seed inside the specified container (demo_api by default, prod_api on cloud)
+        execSync(`docker exec ${E2E_API_CONTAINER} python /app/seeds/fix_admin_role.py`, { stdio: 'inherit' });
+        // Best-effort: attempt restart to clear JWT cache; ignore failures on cloud/CI
+        try {
+          execSync(`docker restart ${E2E_API_CONTAINER}`, { stdio: 'inherit' });
+        } catch (e) {
+          console.log(`[E2E Setup] Skip docker restart for container '${E2E_API_CONTAINER}': ${String((e as Error)?.message || e)}`);
+        }
+      }
+    } catch (e) {
+      console.log(`[E2E Setup] Skip docker-based admin role fix: ${String((e as Error)?.message || e)}`);
+    }
+
     // Wait for API to be healthy (retry up to 10s)
     for (let i = 0; i < 10; i++) {
       try {
