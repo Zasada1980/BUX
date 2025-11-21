@@ -1393,7 +1393,8 @@ def admin_list_pending(
         
         # Fetch items
         query = f"""
-            SELECT id, kind, payload_json, status, actor, created_at, reviewed_by, reviewed_at, review_reason
+            SELECT id, kind, payload_json, status, actor, created_at, 
+                   NULL AS reviewed_by, NULL AS reviewed_at, NULL AS review_reason
             FROM pending_changes 
             WHERE {where_sql}
             ORDER BY id DESC 
