@@ -60,7 +60,8 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
           DB_PATH: ${{github.workspace}}/db/shifts.e2e.db
-          ADMIN_SECRET: test-secret-key
+          INTERNAL_ADMIN_SECRET: test-secret-key
+          IS_TEST_MODE: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
