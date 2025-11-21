@@ -129,6 +129,7 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
           DB_PATH: ":memory:"
           PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+          pytest_plugins: ""
 
       - name: Upload pytest results
         if: always()
