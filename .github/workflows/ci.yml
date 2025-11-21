@@ -28,13 +28,13 @@ jobs:
           pip install -r api/requirements.txt
 
       - name: Setup database and run migrations
-        working-directory: .
+        working-directory: api
         run: |
-          mkdir -p db
+          mkdir -p ../db
           alembic upgrade head
         env:
           PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
-          ALEMBIC_URL: sqlite:///db/shifts.e2e.db
+          ALEMBIC_URL: sqlite:///../db/shifts.e2e.db
 
       - name: Seed test data
         working-directory: .
