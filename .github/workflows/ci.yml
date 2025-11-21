@@ -27,18 +27,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r api/requirements.txt
 
-      - name: Create api symlink for imports
-        run: |
-          ln -s . api
-        working-directory: ${{ github.workspace }}
-
       - name: Setup database and run migrations
         working-directory: .
         run: |
           mkdir -p db
           alembic upgrade head
         env:
-          PYTHONPATH: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
           DB_PATH: db/shifts.e2e.db
 
       - name: Seed test data
@@ -46,7 +41,7 @@ jobs:
         run: |
           python -m api.seeds.seed_e2e_minimal
         env:
-          PYTHONPATH: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
           DB_PATH: db/shifts.e2e.db
 
       - name: Start FastAPI backend
@@ -56,7 +51,7 @@ jobs:
           sleep 5
           curl -f http://localhost:8188/health || (cat api.log && exit 1)
         env:
-          PYTHONPATH: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/api:${{ github.workspace }}
           DB_PATH: db/shifts.e2e.db
           ADMIN_SECRET: test-secret-key
 
