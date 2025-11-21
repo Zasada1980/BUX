@@ -56,24 +56,59 @@ def app(test_db_path):
     
     Imports main:app AFTER test_db_path has set DB_PATH,
     ensuring db.engine uses the test database.
+    
+    CRITICAL FIX (CI-13): Force reload ALL api modules to pick up new DB_PATH.
+    Pydantic Settings and SQLAlchemy engine are cached on first import.
     """
+    import sys
+    
+    # Delete all api-related modules to force fresh import with new DB_PATH
+    modules_to_delete = [k for k in sys.modules.keys() if k in ('config', 'db', 'models', 'main') or k.startswith('api.')]
+    for mod in modules_to_delete:
+        del sys.modules[mod]
+    
+    # Now import main (which will import freshly reloaded config + db + models)
     from main import app
     return app
 
 
 @pytest.fixture(scope="session")
-def db_engine_and_session(app):
+def db_engine_and_session(app, test_db_path):
     """
     Database engine and SessionLocal from db module.
     
     Creates schema once for entire test session.
     Returns tuple: (engine, SessionLocal, Base)
+    
+    CRITICAL FIX (CI-13): Force re-import of BOTH db AND models modules AFTER test_db_path is set.
+    This ensures Base.metadata uses the correct test engine, not the production engine.
     """
+    import sys
+    
+    # STEP 1: Delete BOTH db and models modules if cached
+    # CRITICAL: models.Base.metadata can cache references to old db.engine
+    for mod in ['db', 'models', 'models_users']:
+        if mod in sys.modules:
+            del sys.modules[mod]
+    
+    # STEP 2: Import NEW engine (will use test DB_PATH from environment)
     from db import engine, SessionLocal
+    
+    # STEP 3: Import Base AFTER db reload (ensures metadata uses NEW engine)
     from models import Base
     
-    # Create all tables
+    print(f"[CI-13] db_engine_and_session CALLED (once per session)")
+    print(f"[CI-13] Engine URL: {engine.url}")
+    
+    # STEP 4: Drop all existing tables/indexes (clean slate for test session)
+    print(f"[CI-13] Dropping all tables/indexes...")
+    Base.metadata.drop_all(bind=engine)
+    
+    # STEP 5: Create all tables/indexes from Base.metadata
+    # NOTE: index=True on models_users.User.telegram_id creates ix_users_telegram_id
+    print(f"[CI-13] Creating all tables/indexes...")
     Base.metadata.create_all(bind=engine)
+    print(f"[CI-13] Schema ready")
     
     return engine, SessionLocal, Base
 

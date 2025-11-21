@@ -176,6 +176,7 @@ class Employee(Base):
     """
 
     __tablename__ = "users"
+    __table_args__ = {'extend_existing': True}  # CI-14 FIX: Allow coexistence with models_users.User (same table)
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     telegram_id = Column(BigInteger, unique=True, nullable=True, index=True)  # Optional (for Telegram OAuth)
@@ -185,9 +186,10 @@ class Employee(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    # Relationships
-    auth_credentials = relationship("AuthCredential", back_populates="employee", cascade="all, delete-orphan")
-    refresh_tokens = relationship("RefreshToken", back_populates="employee", cascade="all, delete-orphan")
+    # Relationships (CI-14: viewonly due to dual Employee/User table mapping conflict)
+    auth_credentials = relationship("AuthCredential", back_populates="employee", cascade="all, delete", passive_deletes=True, viewonly=True)
+    refresh_tokens = relationship("RefreshToken", back_populates="employee", cascade="all, delete", passive_deletes=True, viewonly=True)
+    chat_sessions = relationship("ChatSession", back_populates="employee", cascade="all, delete", passive_deletes=True, viewonly=True)
 
 
 class AuthCredential(Base):
@@ -208,7 +210,7 @@ class AuthCredential(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     
     # Relationships
-    employee = relationship("Employee", back_populates="auth_credentials")
+    employee = relationship("Employee", back_populates="auth_credentials", viewonly=True)  # CI-14: viewonly due to dual Employee/User mapping
 
 
 class RefreshToken(Base):
@@ -227,7 +229,39 @@ class RefreshToken(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Relationships
-    employee = relationship("Employee", back_populates="refresh_tokens")
+    employee = relationship("Employee", back_populates="refresh_tokens", viewonly=True)  # CI-14: viewonly due to dual Employee/User mapping
+
+
+class ChatSession(Base):
+    """AI Chat session for conversation history."""
+    
+    __tablename__ = "chat_sessions"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    employee_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    title = Column(String(200), nullable=True)  # First user message or auto-generated
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    
+    # Relationships
+    employee = relationship("Employee", back_populates="chat_sessions", viewonly=True)  # CI-14: viewonly due to dual Employee/User mapping
+    messages = relationship("ChatMessage", back_populates="session", cascade="all, delete-orphan")
+
+
+class ChatMessage(Base):
+    """Individual message in AI Chat conversation."""
+    
+    __tablename__ = "chat_messages"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    session_id = Column(Integer, ForeignKey("chat_sessions.id", ondelete="CASCADE"), nullable=False, index=True)
+    role = Column(String(20), nullable=False)  # "user", "assistant", "system"
+    content = Column(String, nullable=False)  # Message text
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    session = relationship("ChatSession", back_populates="messages")
+
 
 
 
