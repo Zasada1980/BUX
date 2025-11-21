@@ -27,6 +27,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r api/requirements.txt
 
+      - name: Create api symlink for imports
+        run: |
+          ln -s . api
+        working-directory: ${{ github.workspace }}
+
       - name: Setup database and run migrations
         working-directory: .
         run: |
