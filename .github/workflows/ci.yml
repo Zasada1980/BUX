@@ -81,6 +81,8 @@ jobs:
         run: npm run test:e2e
         env:
           CI: true
+          INTERNAL_ADMIN_SECRET: test-secret-key
+          API_URL: http://localhost:8188
 
       - name: Upload API logs
         if: failure()
