@@ -97,7 +97,7 @@ def test_jwt_token_validation(admin_token):
     assert "exp" in payload_no_sig, "Missing 'exp' claim (expiration)"
 
     # 2) Hard check: Signature verification with real secret (CI-7A NEW)
-    from api.auth import JWT_SECRET_KEY, JWT_ALGORITHM
+    from auth import JWT_SECRET_KEY, JWT_ALGORITHM
     payload = jwt.decode(admin_token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
    
     assert payload["sub"] == "admin", f"Expected sub='admin', got {payload['sub']}"
@@ -107,7 +107,7 @@ def test_jwt_token_validation(admin_token):
 
 def test_password_hashing(db_session, seed_admin):
     """Test bcrypt password hashing."""
-    from api.models import AuthCredential  # Changed from api.models_users
+    from models import AuthCredential  # Changed from api.models_users
 
     user_id, username, password = seed_admin
 
@@ -119,7 +119,7 @@ def test_password_hashing(db_session, seed_admin):
     assert cred.password_hash.startswith("$"), f"Not bcrypt hash: {cred.password_hash[:10]}"
 
     # Verify password using auth.py
-    from api.auth import verify_password
+    from auth import verify_password
     is_valid = verify_password(password, cred.password_hash)
     assert is_valid, "Password verification failed"
 

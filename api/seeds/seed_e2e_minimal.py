@@ -56,8 +56,8 @@ def seed_minimal():
 
     # Password hash for "admin123" (bcrypt)
     cur.execute("""
-        INSERT INTO auth_credentials (employee_id, username, password_hash)
-        VALUES (1, "admin", "$2b$12$eDbfxvZxZrkDABJUsIXskerQYs0DtXu757Ij9nRLAydsHbmy1jkYe")
+        INSERT INTO auth_credentials (employee_id, username, password_hash, failed_attempts)
+        VALUES (1, "admin", "$2b$12$eDbfxvZxZrkDABJUsIXskerQYs0DtXu757Ij9nRLAydsHbmy1jkYe", 0)
     """)
 
     print("    ✅ Admin auth created (username=admin, password=admin123)")
@@ -71,11 +71,11 @@ def seed_minimal():
 
     # New schema: command_key, telegram_command, label, role, enabled, is_core, position, command_type
     bot_commands_data = [
-        ("start", "/start", "Start", "worker", 1, 0, 0, "action", "Начать работу"),
-        ("end", "/end", "End", "worker", 1, 0, 1, "action", "Завершить смену"),
-        ("status", "/status", "Status", "worker", 1, 0, 2, "action", "Статус текущей смены"),
-        ("report", "/report", "Report", "foreman", 1, 0, 0, "action", "Сформировать отчёт"),
-        ("approve", "/approve", "Approve", "admin", 1, 0, 0, "action", "Утвердить изменения"),
+        ("start", "/start", "Start", "worker", 1, 0, 0, "slash", "Начать работу"),
+        ("end", "/end", "End", "worker", 1, 0, 1, "slash", "Завершить смену"),
+        ("status", "/status", "Status", "worker", 1, 0, 2, "slash", "Статус текущей смены"),
+        ("report", "/report", "Report", "foreman", 1, 0, 0, "slash", "Сформировать отчёт"),
+        ("approve", "/approve", "Approve", "admin", 1, 0, 0, "slash", "Утвердить изменения"),
     ]
 
     cur.executemany("""
@@ -84,6 +84,67 @@ def seed_minimal():
     """, bot_commands_data)
 
     print(f"    ✅ {len(bot_commands_data)} bot commands created")
+
+    # ═══════════════════════════════════════════════════════════════════
+    # 4. Shifts (for shifts-review-smoke tests)
+    # ═══════════════════════════════════════════════════════════════════
+    print("  📝 Creating shifts...")
+
+    cur.execute("DELETE FROM shifts")
+
+    shifts_data = [
+        (1, "111111", None, "Test Address 1", "completed", "2025-11-20 08:00:00", "2025-11-20 17:00:00"),
+        (2, "222222", None, "Test Address 2", "open", "2025-11-21 09:00:00", None),
+        (3, "111111", None, "Test Address 3", "cancelled", "2025-11-19 10:00:00", "2025-11-19 12:00:00"),
+    ]
+
+    cur.executemany("""
+        INSERT INTO shifts (id, user_id, client_id, work_address, status, created_at, ended_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, shifts_data)
+
+    print(f"    ✅ {len(shifts_data)} shifts created")
+
+    # ═══════════════════════════════════════════════════════════════════
+    # 5. Expenses (for expenses-filter-csv tests)
+    # ═══════════════════════════════════════════════════════════════════
+    print("  📝 Creating expenses...")
+
+    cur.execute("DELETE FROM expenses")
+
+    expenses_data = [
+        (1, "111111", 1, "transport", 50.0, "ILS", None, None, "2025-11-20 10:00:00", 1, "manual"),
+        (2, "111111", 1, "food", 30.0, "ILS", None, None, "2025-11-20 12:00:00", 1, "manual"),
+        (3, "222222", 2, "materials", 100.0, "ILS", None, None, "2025-11-21 11:00:00", 0, "manual"),
+        (4, "111111", None, "other", 20.0, "ILS", None, None, "2025-11-19 14:00:00", 1, "manual"),
+    ]
+
+    cur.executemany("""
+        INSERT INTO expenses (id, worker_id, shift_id, category, amount, currency, photo_ref, ocr_text, created_at, confirmed, source)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, expenses_data)
+
+    print(f"    ✅ {len(expenses_data)} expenses created")
+
+    # ═══════════════════════════════════════════════════════════════════
+    # 6. Invoices (for invoices-review-csv tests)
+    # ═══════════════════════════════════════════════════════════════════
+    print("  📝 Creating invoices...")
+
+    cur.execute("DELETE FROM invoices")
+
+    invoices_data = [
+        (1, "client1", "2025-11-01", "2025-11-15", "1500.00", "ILS", "draft", 1, None, None, 1, "2025-11-20 09:00:00"),
+        (2, "client2", "2025-11-01", "2025-11-15", "2000.00", "ILS", "sent", 1, None, None, 1, "2025-11-19 10:00:00"),
+        (3, "client1", "2025-11-16", "2025-11-30", "1800.00", "ILS", "paid", 1, None, None, 1, "2025-11-18 11:00:00"),
+    ]
+
+    cur.executemany("""
+        INSERT INTO invoices (id, client_id, period_from, period_to, total, currency, status, version, pdf_path, xlsx_path, current_version, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, invoices_data)
+
+    print(f"    ✅ {len(invoices_data)} invoices created")
 
     # ═══════════════════════════════════════════════════════════════════
     # Commit and close
@@ -96,7 +157,10 @@ def seed_minimal():
     print(f"   - Users: {len(users_data)} (3 active, 1 inactive)")
     print(f"   - Admin: username=admin, password=admin123")
     print(f"   - Bot commands: {len(bot_commands_data)}")
-    print("\n💡 Ready for E2E tests (bot-menu, user-management, auth)")
+    print(f"   - Shifts: {len(shifts_data)}")
+    print(f"   - Expenses: {len(expenses_data)}")
+    print(f"   - Invoices: {len(invoices_data)}")
+    print("\n💡 Ready for E2E tests (bot-menu, user-management, auth, expenses, invoices, shifts)")
 
 
 if __name__ == "__main__":

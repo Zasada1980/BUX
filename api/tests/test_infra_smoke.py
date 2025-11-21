@@ -13,7 +13,7 @@ CI-6 Refactoring:
 - Removed 3 xfail decorators (seed_telegram_admin provides admin user)
 """
 from sqlalchemy import inspect
-from api.models import TelegramUser, ChannelMessage
+from models import TelegramUser, ChannelMessage
 
 
 def test_infra_1_model(db_engine_and_session):
